@@ -1,3 +1,4 @@
+// https://github.com/tongjieme/koala-form
 (function($){
 	// helper - merge two objects together, without using $.extend
 	var merge = function (obj1, obj2) {
