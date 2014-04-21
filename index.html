@@ -4,16 +4,17 @@
 	<meta charset=utf-8>
 	<title></title>
 	<meta http-equiv="x-ua-compatible" content="IE=10">
-	<link rel="stylesheet" href="koala-form.css">
-	<link rel="stylesheet" href="custom.css">
 
 	<link rel="stylesheet" href="http://lib.sinaapp.com/js/bootstrap/2.3.2/css/bootstrap.min.css">
-	<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+	<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
 	<script src="http://lib.sinaapp.com/js/bootstrap/2.3.2/js/bootstrap.min.js"></script>
 
 	<style>
 		label {
 			display: block;
+		}
+		[class^=help] {
+			display: none;
 		}
 	</style>
 </head>
@@ -22,21 +23,24 @@
 <form action="#" class="koala-form">
 	<section class="controls">
 		<input type="text" id="username" placeholder="username" data-valid-options="required regex" data-regex="email" data-on-single-pass="" data-on-passed="">
-		<span class="help-required">此处为必选项</span>
-		<span class="help-regex">格式不正确</span>
-		<span class="help-tips">提示</span>
+		<span class="help-required">This field is required.</span>
+		<span class="help-regex">Doesn't match the regex.</span>
+		<span class="help-tips">Here is the tips.</span>
+		<span class="help">Info showed via simple mode.</span>
 	</section>
 	<section class="controls">
 		<input type="password" id="password" placeholder="password" data-valid-options="required regex" data-regex="" data-on-single-pass="" data-on-passed="">
-		<span class="help-required">此处为必选项</span>
-		<span class="help-regex">格式不正确</span>
-		<span class="help-tips">提示</span>
+		<span class="help-required">This field is required.</span>
+		<span class="help-regex">Doesn't match the regex.</span>
+		<span class="help-tips">Here is the tips.</span>
+		<span class="help">Info showed via simple mode.</span>
 	</section>
 	<section class="controls">
 		<input type="email" id="email" placeholder="email" data-valid-options="required regex" data-regex="" data-on-single-pass="" data-on-passed="">
-		<span class="help-required">此处为必选项</span>
-		<span class="help-regex">格式不正确</span>
-		<span class="help-tips">提示</span>
+		<span class="help-required">This field is required.</span>
+		<span class="help-regex">Doesn't match the regex.</span>
+		<span class="help-tips">Here is the tips.</span>
+		<span class="help">Info showed via simple mode.</span>
 	</section>
 	<section class="controls">
 		<button type="submit" class="btn btn-primary">提交</button>
@@ -45,27 +49,32 @@
 
 <script src="koala-form.js"></script>
 <script>
+// var form = new KoalaForm({
+// 	$form: $('.koala-form'),
+// 	controlSelector: '.controls',
+// 	mode: 'complex',
+// 	on_single_error_func: function(type, o){
+// 		if(type == 'required') {
+// 			$(this).siblings('.help-required').fadeIn();
+// 		}
+// 		if(type == 'regex') {
+// 			$(this).siblings('.help-regex').fadeIn();
+// 		}
+// 		o = '';
+// 	},
+// 	on_single_focus_func: function(){
+// 		$(this).siblings('.help-required').hide();
+// 		$(this).siblings('.help-regex').hide();
+// 		$(this).siblings('.help-tips').show();
+// 	},
+// 	on_single_blur_func: function(){
+// 		$(this).siblings('.help-tips').hide();
+// 	}
+// });
 var form = new KoalaForm({
 	$form: $('.koala-form'),
 	controlSelector: '.controls',
-	mode: 'complex',
-	on_single_error_func: function(type, o){
-		if(type == 'required') {
-			$(this).siblings('.help-required').fadeIn();
-		}
-		if(type == 'regex') {
-			$(this).siblings('.help-regex').fadeIn();
-		}
-		o = '';
-	},
-	on_single_focus_func: function(){
-		$(this).siblings('.help-required').hide();
-		$(this).siblings('.help-regex').hide();
-		$(this).siblings('.help-tips').show();
-	},
-	on_single_blur_func: function(){
-		$(this).siblings('.help-tips').hide();
-	}
+	mode: 'simple'
 });
 </script>
 </body>
