@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset=utf-8>
+	<meta charset="utf-8">
 	<title></title>
 	<meta http-equiv="x-ua-compatible" content="IE=10">
 
@@ -10,9 +10,6 @@
 	<script src="http://lib.sinaapp.com/js/bootstrap/2.3.2/js/bootstrap.min.js"></script>
 
 	<style>
-		label {
-			display: block;
-		}
 		[class^=help] {
 			display: none;
 		}
@@ -66,6 +63,11 @@
 
 <script src="koala-form.js"></script>
 <script>
+var formSimple = new KoalaForm({
+	$form: $('.koala-form.simple'),
+	controlSelector: '.controls',
+	mode: 'simple'
+});
 var formComplex = new KoalaForm({
 	$form: $('.koala-form.complex'),
 	controlSelector: '.controls',
@@ -87,11 +89,6 @@ var formComplex = new KoalaForm({
 	on_single_blur_func: function(){
 		$(this).siblings('.help-tips').hide();
 	}
-});
-var formSimple = new KoalaForm({
-	$form: $('.koala-form.simple'),
-	controlSelector: '.controls',
-	mode: 'simple'
 });
 </script>
 </body>
