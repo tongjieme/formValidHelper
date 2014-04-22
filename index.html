@@ -72,14 +72,13 @@ var formComplex = new KoalaForm({
 	$form: $('.koala-form.complex'),
 	controlSelector: '.controls',
 	mode: 'complex',
-	on_single_error_func: function(type, o){
+	on_single_error_func: function(type){
 		if(type == 'required') {
 			$(this).siblings('.help-required').fadeIn();
 		}
 		if(type == 'regex') {
 			$(this).siblings('.help-regex').fadeIn();
 		}
-		o = '';
 	},
 	on_single_focus_func: function(){
 		$(this).siblings('.help-required').hide();

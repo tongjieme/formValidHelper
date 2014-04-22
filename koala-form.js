@@ -46,11 +46,11 @@
 			},
 			type: ['email', 'url'],
 			mode: 'simple', // or complex
-			on_single_error_func: function(){},
-			on_single_focus_func: function(){},
+			on_single_error_func: function(type){}, // type: invalid type
+			on_single_focus_func: function(){}, 
 			on_single_blur_func: function(){},
 			on_single_pass_func: function(){},
-			on_pass_func: function(){}
+			on_pass_func: function(){} // return false to prevent default
 		}, o);
 		this.init = function(){
 			this.o.mode == 'simple' ? this.simple() : this.complex();
@@ -107,7 +107,9 @@
 					o.on_single_pass_func.call(v);
 				});
 				if(!hasError) {
-					o.on_pass_func();	
+					if( o.on_pass_func() === false) {
+						e.preventDefault();
+					}
 				}
 			});
 		},
