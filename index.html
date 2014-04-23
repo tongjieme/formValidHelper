@@ -13,6 +13,13 @@
 		[class^=help] {
 			display: none;
 		}
+		.hasError {
+			color: #b94a48 !important;
+			border-color: #e9322d !important;
+			-webkit-box-shadow: 0 0 6px #f8b9b7 !important;
+			-moz-box-shadow: 0 0 6px #f8b9b7 !important;
+			box-shadow: 0 0 6px #f8b9b7 !important;
+		}
 	</style>
 </head>
 <body>
@@ -20,7 +27,7 @@
 <h2>Simple mode</h2>
 <form action="#" class="koala-form simple">
 	<section class="controls">
-		<input type="text" id="username" placeholder="username" data-valid-options="required regex" data-regex="email" data-on-single-pass="" data-on-passed="">
+		<input type="text" id="username" placeholder="username" data-valid-options="required regex" data-regex="" data-on-single-pass="" data-on-passed="">
 		<span class="help">Info showed via simple mode.</span>
 	</section>
 	<section class="controls">

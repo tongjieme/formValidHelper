@@ -32,6 +32,7 @@
 		this.o = $.extend({},{
 			$form: $('.koala-form'),
 			controlSelector: '.controls',
+			errorClass: 'hasError',
 			reg: {
 				email: /^[a-zA-Z0-9_]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/,
 				chinese: /^[\u0391-\uFFE5]+$/,
@@ -63,9 +64,11 @@
 			o.$form.find('[data-valid-options]').on('blur', function(){
 					if( THIS.test($(this)).notPass ) {
 						THIS.simpleShowHelp($(this), 'show');
+						$(this).addClass(o.errorClass);
 					}
 				}).on('focus', function(){
 					THIS.simpleShowHelp($(this), 'hide');
+					$(this).removeClass(o.errorClass);
 				});
 			o.$form.on('submit', function(e){
 				var inputs = $(this).find('[data-valid-options]');
