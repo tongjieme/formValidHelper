@@ -33,6 +33,7 @@
 			$form: $('.koala-form'),
 			controlSelector: '.controls',
 			errorClass: 'hasError',
+			focus2error: false,
 			reg: {
 				email: /^[a-zA-Z0-9_]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/,
 				chinese: /^[\u0391-\uFFE5]+$/,
@@ -64,17 +65,16 @@
 			o.$form.find('[data-valid-options]').on('blur', function(){
 					if( THIS.test($(this)).notPass ) {
 						THIS.simpleShowHelp($(this), 'show');
-						$(this).addClass(o.errorClass);
 					}
 				}).on('focus', function(){
 					THIS.simpleShowHelp($(this), 'hide');
-					$(this).removeClass(o.errorClass);
 				});
 			o.$form.on('submit', function(e){
 				var inputs = $(this).find('[data-valid-options]');
 				$.each(inputs, function(k,v){
 					if( THIS.test($(v)).notPass ) {
 						THIS.simpleShowHelp($(v), 'show');
+						o.focus2error ? $(v)[0].focus() : '';
 						e.preventDefault();
 						return false; // break out the each loop
 					}
@@ -165,10 +165,13 @@
 			return false;
 		},
 		this.simpleShowHelp = function($el, string){
+			var o = this.o;
 			if(string == 'show') {
-				$el.closest(o.controlSelector).find('.help').show();
+				$el.addClass(o.errorClass)
+				   .closest(o.controlSelector).find('.help').show();
 			} else {
-				$el.closest(o.controlSelector).find('.help').hide();
+				$el.removeClass(o.errorClass)
+				   .closest(o.controlSelector).find('.help').hide();
 			}
 		};
 		this.init();
