@@ -49,10 +49,10 @@
 			type: ['email', 'url'],
 			mode: 'simple', // or complex
 			on_single_error_func: function(type){}, // type: invalid type
-			on_single_focus_func: function(){}, 
-			on_single_blur_func: function(){},
-			on_single_pass_func: function(){},
-			on_pass_func: function(){} // return false to prevent default
+			on_single_focus_func: function(){}, // this is the current input
+			on_single_blur_func: function(){}, // this is the current input
+			on_single_pass_func: function(){}, // this is the current input
+			on_pass_func: function(e){} // e is the event
 		}, o);
 		this.init = function(){
 			this.o.mode == 'simple' ? this.simple() : this.complex();
@@ -102,17 +102,17 @@
 					var notPass = THIS.test($(v)).notPass,
 						type = THIS.test($(v)).type;
 					if( notPass ) {
-						hasError = true;
-						o.on_single_error_func.call(v, type, o);
-						e.preventDefault();
-						return false; // break out the each loop
+						if( o.on_single_error_func.call(v, type, o) != false ) {
+							hasError = true;
+							
+							e.preventDefault();
+							return false; // break out the each loop
+						}
 					}
 					o.on_single_pass_func.call(v);
 				});
 				if(!hasError) {
-					if( o.on_pass_func() === false) {
-						e.preventDefault();
-					}
+					o.on_pass_func(e);
 				}
 			});
 		},

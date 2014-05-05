@@ -44,9 +44,9 @@
 </form>
 
 <h2>Complex mode</h2>
-<form action="#" class="koala-form complex">
+<form action="1" class="koala-form complex">
 	<section class="controls">
-		<input type="text" id="username" placeholder="username" data-valid-options="required regex" data-regex="email" data-on-single-pass="" data-on-passed="">
+		<input type="text" id="username" placeholder="username" data-valid-options="required regex" data-on-single-pass="" data-on-passed="">
 		<span class="help-required">This field is required.</span>
 		<span class="help-regex">Doesn't match the regex.</span>
 		<span class="help-tips">Here is the tips.</span>
@@ -94,6 +94,9 @@ var formComplex = new KoalaForm({
 	},
 	on_single_blur_func: function(){
 		$(this).siblings('.help-tips').hide();
+	},
+	on_pass_func: function(e){
+		e.preventDefault();
 	}
 });
 </script>
