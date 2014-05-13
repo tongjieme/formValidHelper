@@ -1,4 +1,5 @@
 // https://github.com/tongjieme/koala-form
+// versino 0.8
 (function($){
 	// helper - merge two objects together, without using $.extend
 	var merge = function (obj1, obj2) {
@@ -31,7 +32,7 @@
 	window.KoalaForm = function(o){
 		this.o = $.extend({},{
 			$form: $('.koala-form'),
-			controlSelector: '.controls',
+			controlSelector: '',
 			errorClass: 'hasError',
 			focus2error: false,
 			reg: {
@@ -64,17 +65,17 @@
 
 			o.$form.find('[data-valid-options]').on('blur', function(){
 					if( THIS.test($(this)).notPass ) {
-						THIS.simpleShowHelp($(this), 'show');
+						THIS.simpleShowHelp($(this), 'show', THIS.test($(this)).type );
 					}
 				}).on('focus', function(){
-					THIS.simpleShowHelp($(this), 'hide');
+					THIS.simpleShowHelp($(this), 'hide', THIS.test($(this)).type );
 				});
 			o.$form.on('submit', function(e){
 				var inputs = $(this).find('[data-valid-options]');
 				$.each(inputs, function(k,v){
 					if( THIS.test($(v)).notPass ) {
-						THIS.simpleShowHelp($(v), 'show');
-						o.focus2error ? $(v)[0].focus() : '';
+						THIS.simpleShowHelp($(v), 'show', THIS.test($(this)).type );
+						o.focus2error || $(v)[0].focus();
 						e.preventDefault();
 						return false; // break out the each loop
 					}
@@ -119,28 +120,32 @@
 		this.test = function($el){
 			var options = $el.data('validOptions').split(' '),
 				type = $el.attr('type');
-			if( inArray(options, 'required') && !this.required($el) ) {
-				return {
-					notPass: true,
-					type: 'required'
-				};
+
+			var result = {
+				notPass: false,
+				type: ''
+			};
+			if( ( inArray(options, 'required') || $el.prop('required') ) && !this.required($el) ) {
+				result.notPass = true;
+				result.type = 'required';
 			}
 			if( inArray(options, 'regex') && !this.regex($el) ) {
-				return {
-					notPass: true,
-					type: 'regex'
-				};
+				result.notPass = true;
+				result.type = 'regex';
 			}
-			if( inArray(this.o.type, type) && !this.type($el) ) {
-				return {
-					notPass: true,
-					type: 'regex'
-				};
+			if( inArray(options, type) && !this.type($el) ) {
+				result.notPass = true;
+				result.type = 'regex';
 			}
-			return {
-					notPass: false,
-					type: ''
-				};
+			if( inArray(options, 'equal') && !this.equal($el) ) {
+				result.notPass = true;
+				result.type = 'equal';
+			}
+			if( inArray(options, 'minLength') && !this.minLength($el) ) {
+				result.notPass = true;
+				result.type = 'minLength';
+			}
+			return result;
 		},
 		this.required = function($el){
 			if( !$el.val().length || $el.val == -1 ) {
@@ -164,14 +169,55 @@
 			}
 			return false;
 		},
-		this.simpleShowHelp = function($el, string){
-			var o = this.o;
-			if(string == 'show') {
-				$el.addClass(o.errorClass)
-				   .closest(o.controlSelector).find('.help').show();
+		this.equal = function($el){
+			if( $el.val() == $($el.data('equal-to')).eq(0).val() ) {
+				return true;
+			}
+			
+			return false;
+		},
+		this.minLength = function($el){
+			if( $el.val().length >= parseInt($el.data('min-length')) ) {
+				return true;
+			}
+			
+			return false;
+		},
+		this.hasHelpType = function($el){
+			var o = this.o,
+				helps;
+			if(o.controlSelector) {
+				helps = $el.closest(o.controlSelector).find('[class^=help]')
 			} else {
-				$el.removeClass(o.errorClass)
-				   .closest(o.controlSelector).find('.help').hide();
+				helps = $el.siblings('[class^=help]');
+			}
+
+			return helps.length > 1;
+		}
+		this.simpleShowHelp = function($el, action, type){
+			var o = this.o,
+				helpClass = '.help';
+
+
+			if (this.hasHelpType($el)) {
+				helpClass = '.help-' + type;
+			};
+			if(action == 'show') {
+				if(o.controlSelector) {
+					$el.addClass(o.errorClass)
+					   .closest(o.controlSelector).find(helpClass).show();
+				} else {
+					$el.addClass(o.errorClass)
+					   .siblings(helpClass).show();
+				}
+			} else {
+				if(o.controlSelector) {
+					$el.removeClass(o.errorClass)
+					   .closest(o.controlSelector).find(helpClass).hide();
+				} else {
+					$el.removeClass(o.errorClass)
+					   .siblings(helpClass).hide();
+				}
 			}
 		};
 		this.init();
