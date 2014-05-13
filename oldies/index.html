@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+	<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>jw_gallery</title>
+		<link href="styles.css" rel="stylesheet">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="prettify.js"></script>
+	</head>
+	<body>
+	<div class="redBorder"></div>
+	<div class="greenBorder"></div>
+	<div class="yellowBorder"></div>
+	<div id="wrapper">
+		<nav>	
+			<dl>
+			</dl>
+		</nav>
+		
+		<div id="contentWrapper">
+			<h1 id="mainHeader">Koala-form</h1>
+			<h2 id="introText">Form validation plugin</h2>
+			<article id="gettingStarted">
+				<h1>Begin</h1>
+				<p>Link the js file.<code>koala-form.js</code>.</p>
+<pre data-type="html">
+<code>
+&lt;script src="koala-form.js"&gt;&lt;/script&gt;
+</code>
+</pre>
+
+
+
+
+
+
+      
+		</div>
+	</div>
+	</body>
+	<script>
+	$(document).ready(function(){
+	
+		var $nav = $("nav dl");
+		
+		$("article").each(function(){
+			var $el = $(this);
+			var $h1 = $el.find("h1");
+			var sectionTitle = $h1.html();
+			var articleId = $el.attr("id");
+			var $dt = $("<dt><a href=\"#"+articleId +"\">"+sectionTitle+"</a></dt>");
+			
+			$dt.find("a").on("click",function(e){
+				e.preventDefault();
+				$('html,body').animate({scrollTop: $h1.offset().top},400);
+			});
+			
+			$nav.append($dt);
+			
+			var $subtitles = $el.find("h2");
+			
+			$subtitles.each(function(){
+				var $h2 = $(this);
+				var title = $h2.text();
+				var newID = articleId + "-" +camelCase(title);
+				$h2.attr("id",newID);
+				var $dd = $("<dd><a href=\"#" +newID + "\">" + title + "</a></dd>");
+				
+				$dd.find("a").on("click",function(e){
+					e.preventDefault();
+					$('html,body').animate({scrollTop: $h2.offset().top},400);
+				})
+				$nav.append($dd);
+				
+			});
+			
+			var $articles = $el.find("article");
+			
+		});	
+		prettyPrint();			
+		
+		function camelCase(str){			
+			var splitString = str.split(" ");
+			
+			var returnedCamel = splitString[0].toLowerCase();
+			
+			for (var i=1; i<splitString.length; i++){
+				returnedCamel += splitString[i].charAt(0).toUpperCase() + splitString[i].substring(1).toLowerCase();
+			}
+			
+			return returnedCamel;
+			
+		} 
+	});
+	</script>
+</html>

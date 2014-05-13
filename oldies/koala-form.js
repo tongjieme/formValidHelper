@@ -1,5 +1,4 @@
 // https://github.com/tongjieme/koala-form
-// versino 0.8
 (function($){
 	// helper - merge two objects together, without using $.extend
 	var merge = function (obj1, obj2) {
@@ -32,9 +31,8 @@
 	window.KoalaForm = function(o){
 		this.o = $.extend({},{
 			$form: $('.koala-form'),
-			controlSelector: '',
+			controlSelector: '.controls',
 			errorClass: 'hasError',
-			focus2error: false,
 			reg: {
 				email: /^[a-zA-Z0-9_]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/,
 				chinese: /^[\u0391-\uFFE5]+$/,
@@ -50,10 +48,10 @@
 			type: ['email', 'url'],
 			mode: 'simple', // or complex
 			on_single_error_func: function(type){}, // type: invalid type
-			on_single_focus_func: function(){}, // this is the current input
-			on_single_blur_func: function(){}, // this is the current input
-			on_single_pass_func: function(){}, // this is the current input
-			on_pass_func: function(e){} // e is the event
+			on_single_focus_func: function(){}, 
+			on_single_blur_func: function(){},
+			on_single_pass_func: function(){},
+			on_pass_func: function(){} // return false to prevent default
 		}, o);
 		this.init = function(){
 			this.o.mode == 'simple' ? this.simple() : this.complex();
@@ -65,17 +63,18 @@
 
 			o.$form.find('[data-valid-options]').on('blur', function(){
 					if( THIS.test($(this)).notPass ) {
-						THIS.simpleShowHelp($(this), 'show', THIS.test($(this)).type );
+						THIS.simpleShowHelp($(this), 'show');
+						$(this).removeClass(o.errorClass);
 					}
 				}).on('focus', function(){
-					THIS.simpleShowHelp($(this), 'hide', THIS.test($(this)).type );
+					THIS.simpleShowHelp($(this), 'hide');
+					$(this).removeClass(o.errorClass);
 				});
 			o.$form.on('submit', function(e){
 				var inputs = $(this).find('[data-valid-options]');
 				$.each(inputs, function(k,v){
 					if( THIS.test($(v)).notPass ) {
-						THIS.simpleShowHelp($(v), 'show', THIS.test($(this)).type );
-						o.focus2error || $(v)[0].focus();
+						THIS.simpleShowHelp($(v), 'show');
 						e.preventDefault();
 						return false; // break out the each loop
 					}
@@ -103,49 +102,45 @@
 					var notPass = THIS.test($(v)).notPass,
 						type = THIS.test($(v)).type;
 					if( notPass ) {
-						if( o.on_single_error_func.call(v, type, o) != false ) {
-							hasError = true;
-							
-							e.preventDefault();
-							return false; // break out the each loop
-						}
+						hasError = true;
+						o.on_single_error_func.call(v, type, o);
+						e.preventDefault();
+						return false; // break out the each loop
 					}
 					o.on_single_pass_func.call(v);
 				});
 				if(!hasError) {
-					o.on_pass_func(e);
+					if( o.on_pass_func() === false) {
+						e.preventDefault();
+					}
 				}
 			});
 		},
 		this.test = function($el){
 			var options = $el.data('validOptions').split(' '),
 				type = $el.attr('type');
-
-			var result = {
-				notPass: false,
-				type: ''
-			};
-			if( ( inArray(options, 'required') || $el.prop('required') ) && !this.required($el) ) {
-				result.notPass = true;
-				result.type = 'required';
+			if( inArray(options, 'required') && !this.required($el) ) {
+				return {
+					notPass: true,
+					type: 'required'
+				};
 			}
 			if( inArray(options, 'regex') && !this.regex($el) ) {
-				result.notPass = true;
-				result.type = 'regex';
+				return {
+					notPass: true,
+					type: 'regex'
+				};
 			}
-			if( inArray(options, type) && !this.type($el) ) {
-				result.notPass = true;
-				result.type = 'regex';
+			if( inArray(this.o.type, type) && !this.type($el) ) {
+				return {
+					notPass: true,
+					type: 'regex'
+				};
 			}
-			if( inArray(options, 'equal') && !this.equal($el) ) {
-				result.notPass = true;
-				result.type = 'equal';
-			}
-			if( inArray(options, 'minLength') && !this.minLength($el) ) {
-				result.notPass = true;
-				result.type = 'minLength';
-			}
-			return result;
+			return {
+					notPass: false,
+					type: ''
+				};
 		},
 		this.required = function($el){
 			if( !$el.val().length || $el.val == -1 ) {
@@ -169,55 +164,11 @@
 			}
 			return false;
 		},
-		this.equal = function($el){
-			if( $el.val() == $($el.data('equal-to')).eq(0).val() ) {
-				return true;
-			}
-			
-			return false;
-		},
-		this.minLength = function($el){
-			if( $el.val().length >= parseInt($el.data('min-length')) ) {
-				return true;
-			}
-			
-			return false;
-		},
-		this.hasHelpType = function($el){
-			var o = this.o,
-				helps;
-			if(o.controlSelector) {
-				helps = $el.closest(o.controlSelector).find('[class^=help]')
+		this.simpleShowHelp = function($el, string){
+			if(string == 'show') {
+				$el.closest(o.controlSelector).find('.help').show();
 			} else {
-				helps = $el.siblings('[class^=help]');
-			}
-
-			return helps.length > 1;
-		}
-		this.simpleShowHelp = function($el, action, type){
-			var o = this.o,
-				helpClass = '.help';
-
-
-			if (this.hasHelpType($el)) {
-				helpClass = '.help-' + type;
-			};
-			if(action == 'show') {
-				if(o.controlSelector) {
-					$el.addClass(o.errorClass)
-					   .closest(o.controlSelector).find(helpClass).show();
-				} else {
-					$el.addClass(o.errorClass)
-					   .siblings(helpClass).show();
-				}
-			} else {
-				if(o.controlSelector) {
-					$el.removeClass(o.errorClass)
-					   .closest(o.controlSelector).find(helpClass).hide();
-				} else {
-					$el.removeClass(o.errorClass)
-					   .siblings(helpClass).hide();
-				}
+				$el.closest(o.controlSelector).find('.help').hide();
 			}
 		};
 		this.init();
