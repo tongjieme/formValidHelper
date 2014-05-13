@@ -34,7 +34,6 @@
 			$form: $('.koala-form'),
 			controlSelector: '',
 			errorClass: 'hasError',
-			focus2error: false,
 			reg: {
 				email: /^[a-zA-Z0-9_]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/,
 				chinese: /^[\u0391-\uFFE5]+$/,
@@ -64,18 +63,19 @@
 				o = this.o;
 
 			o.$form.find('[data-valid-options]').on('blur', function(){
-					if( THIS.test($(this)).notPass ) {
-						THIS.simpleShowHelp($(this), 'show', THIS.test($(this)).type );
+				var result = THIS.test($(this));
+				
+					if( result.notPass ) {
+						THIS.simpleShowHelp($(this), result.type );
 					}
 				}).on('focus', function(){
-					THIS.simpleShowHelp($(this), 'hide', THIS.test($(this)).type );
+					THIS.simpleHideHelp($(this));
 				});
 			o.$form.on('submit', function(e){
 				var inputs = $(this).find('[data-valid-options]');
 				$.each(inputs, function(k,v){
 					if( THIS.test($(v)).notPass ) {
-						THIS.simpleShowHelp($(v), 'show', THIS.test($(this)).type );
-						o.focus2error || $(v)[0].focus();
+						THIS.simpleShowHelp($(v), THIS.test($(this)).type );
 						e.preventDefault();
 						return false; // break out the each loop
 					}
@@ -128,22 +128,27 @@
 			if( ( inArray(options, 'required') || $el.prop('required') ) && !this.required($el) ) {
 				result.notPass = true;
 				result.type = 'required';
+				return result;
 			}
 			if( inArray(options, 'regex') && !this.regex($el) ) {
 				result.notPass = true;
 				result.type = 'regex';
+				return result;
 			}
 			if( inArray(options, type) && !this.type($el) ) {
 				result.notPass = true;
 				result.type = 'regex';
+				return result;
 			}
 			if( inArray(options, 'equal') && !this.equal($el) ) {
 				result.notPass = true;
 				result.type = 'equal';
+				return result;
 			}
 			if( inArray(options, 'minLength') && !this.minLength($el) ) {
 				result.notPass = true;
 				result.type = 'minLength';
+				return result;
 			}
 			return result;
 		},
@@ -170,11 +175,27 @@
 			return false;
 		},
 		this.equal = function($el){
-			if( $el.val() == $($el.data('equal-to')).eq(0).val() ) {
+			// if the equal-to value is '' then passed
+
+			if(!$($el.data('equal-to')).eq(0).val()) {
 				return true;
 			}
+
+			var valueArray = [];
+			$.each( $el.add($($el.data('equal-to')) ), function(k,v){
+				valueArray.push($(v).val());
+			});
 			
-			return false;
+			if(valueArray.length > 0) {
+		        for(var i = 1; i < valueArray.length; i++)
+		        {
+		            if(valueArray[i] !== valueArray[0]) {
+		                return false;
+		            }
+		        }
+		    }
+		    this.simpleHideHelp($($el.data('equal-to')));
+		    return true;
 		},
 		this.minLength = function($el){
 			if( $el.val().length >= parseInt($el.data('min-length')) ) {
@@ -183,41 +204,43 @@
 			
 			return false;
 		},
-		this.hasHelpType = function($el){
+		this.hasHelpType = function($el, type){
 			var o = this.o,
 				helps;
 			if(o.controlSelector) {
-				helps = $el.closest(o.controlSelector).find('[class^=help]')
+				helps = $el.closest(o.controlSelector).find('[class=help-'+type+']')
 			} else {
-				helps = $el.siblings('[class^=help]');
+				helps = $el.siblings('[class=help-'+type+']');
 			}
 
-			return helps.length > 1;
-		}
-		this.simpleShowHelp = function($el, action, type){
+			return helps.length >= 1;
+		},
+		this.simpleShowHelp = function($el, type){
 			var o = this.o,
 				helpClass = '.help';
 
 
-			if (this.hasHelpType($el)) {
+			if (this.hasHelpType($el, type)) {
 				helpClass = '.help-' + type;
 			};
-			if(action == 'show') {
-				if(o.controlSelector) {
-					$el.addClass(o.errorClass)
-					   .closest(o.controlSelector).find(helpClass).show();
-				} else {
-					$el.addClass(o.errorClass)
-					   .siblings(helpClass).show();
-				}
+			if(o.controlSelector) {
+				$el.addClass(o.errorClass)
+				   .closest(o.controlSelector).find(helpClass).show();
 			} else {
-				if(o.controlSelector) {
-					$el.removeClass(o.errorClass)
-					   .closest(o.controlSelector).find(helpClass).hide();
-				} else {
-					$el.removeClass(o.errorClass)
-					   .siblings(helpClass).hide();
-				}
+				$el.addClass(o.errorClass)
+				   .siblings(helpClass).show();
+			}
+		},
+		this.simpleHideHelp = function($el){
+			var o = this.o,
+				helpClass = '.help';
+				
+			if(o.controlSelector) {
+				$el.removeClass(o.errorClass)
+				   .closest(o.controlSelector).find('[class^=help]').hide();
+			} else {
+				$el.removeClass(o.errorClass)
+				   .siblings('[class^=help]').hide();
 			}
 		};
 		this.init();
