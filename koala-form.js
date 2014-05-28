@@ -243,6 +243,5 @@
 				   .siblings('[class^=help]').hide();
 			}
 		};
-		this.init();
 	};
 })(jQuery, window, undefined);
