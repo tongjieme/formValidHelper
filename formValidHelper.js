@@ -21,13 +21,18 @@ var form = (function(){
 	};
 
 	var test = function($el){
-		var options = $el.data('valid').split(' '),
-			type = $el.attr('type');
-
 		var result = {
 			isPassed: true,
 			type: ''
 		};
+
+		if(!!!$el.data('valid')) {
+			return result;
+		}
+		
+		var options = $el.data('valid').split(' '),
+			type = $el.attr('type');
+
 		if( ( inArray(options, 'required') || $el.prop('required') ) && !isRequired($el) ) {
 			result.isPassed = false;
 			result.type = 'required';
