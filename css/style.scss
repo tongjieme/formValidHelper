@@ -1,0 +1,29 @@
+@import 'base/reset';
+@import 'base/layout';
+@import 'apple/layout_style';
+@import 'apple/base';
+@import 'base/typography';
+@import 'elemis/form_elements';
+@import 'elemis/form_buttons';
+@import '../js/pretify/style';
+
+/* Begin main
+================================================== */
+[class^=help] {
+	display: none;
+}
+
+.button {
+	padding: 7px 18px;
+	width: auto;
+}
+
+section {
+	margin-bottom: 20px;
+}
+
+.paper {
+	margin-top: 50px;
+}
+/* End main
+================================================== */

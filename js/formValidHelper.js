@@ -11,11 +11,11 @@ var form = (function(){
 			numbers_abc_underline: /^\w+$/,
 			url: /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
 		},
-		type = ['email', 'url'];
+		types = ['email', 'url'];
 
-	var inArray = function(array, push) { 
+	var inArray = function(array, v) { 
 	    for(var i=0; i < array.length; i++) { 
-	        if(array[i] == push) return true; 
+	        if(array[i] === v) {return true;} 
 	    }
 	    return false; 
 	};
@@ -43,7 +43,7 @@ var form = (function(){
 			result.type = 'regex';
 			return result;
 		}
-		if( inArray(options, type) && !isType($el) ) {
+		if( inArray(types, type) && !isType($el) ) {
 			result.isPassed = false;
 			result.type = 'regex';
 			return result;
@@ -58,20 +58,25 @@ var form = (function(){
 			result.type = 'minLength';
 			return result;
 		}
+		if( inArray(options, 'maxLength') && !isMaxLength($el) ) {
+			result.isPassed = false;
+			result.type = 'maxLength';
+			return result;
+		}
 		return result;
 	};
 
 	var isRequired = function($el){
-		if( !$el.val().length || $el.val() == -1 ) {
+		if( !$el.val().length || $el.val() === -1 ) {
 			return false;
 		}
 		return true;
 	};
 
 	var isRegex = function($el){
-		var regex = $el.data('regex'),
+		var regex = $el.data('regex');
 			regex = reg.hasOwnProperty(regex) ? reg[regex] : regex;
-		if( $el.val().match(regex) != null ) {
+		if( $el.val().match(regex) !== null ) {
 			return true;
 		}
 		return false;
@@ -80,7 +85,7 @@ var form = (function(){
 	var isType = function($el){
 		var type = $el.attr('type'),
 			regex = reg[type];
-		if( $el.val().match(regex) != null ) {
+		if( $el.val().match(regex) !== null ) {
 			return true;
 		}
 		return false;
@@ -110,6 +115,14 @@ var form = (function(){
 
 	var isMinLength = function($el){
 		if( $el.val().length >= parseInt($el.data('min-length')) ) {
+			return true;
+		}
+		
+		return false;
+	};
+
+	var isMaxLength = function($el){
+		if( $el.val().length <= parseInt($el.data('max-length')) ) {
 			return true;
 		}
 		

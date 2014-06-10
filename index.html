@@ -5,105 +5,142 @@
 	<title></title>
 	<meta http-equiv="x-ua-compatible" content="IE=10">
 
-	<link rel="stylesheet" href="http://lib.sinaapp.com/js/bootstrap/2.3.2/css/bootstrap.min.css">
-	<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
-	<script src="http://lib.sinaapp.com/js/bootstrap/2.3.2/js/bootstrap.min.js"></script>
-
-	<style>
-		[class^=help] {
-			display: none;
-		}
-		.hasError {
-			color: #b94a48 !important;
-			border-color: #e9322d !important;
-			-webkit-box-shadow: 0 0 6px #f8b9b7 !important;
-			-moz-box-shadow: 0 0 6px #f8b9b7 !important;
-			box-shadow: 0 0 6px #f8b9b7 !important;
-		}
-	</style>
+	<link href="css/style.css" rel="stylesheet">
+	<!--[if lt IE 9]>
+	<script src="js/html5shiv.js"></script>
+	<![endif]-->
 </head>
 <body>
-<h1>koala-form.js - Form validation plugin.</h1>
-<h2>Simple mode</h2>
-<form action="#" class="koala-form simple">
-	<section class="controls">
-		<input type="text" id="username" placeholder="username" data-valid="required regex" data-regex="" data-on-single-pass="" data-on-passed="">
-		<span class="help">Info showed via simple mode.</span>
-		<span class="help-required">required</span>
-	</section>
-	<section class="controls">
-		<input type="password" id="password1" placeholder="password" data-valid="required equal" data-equal-to="#password2" data-on-single-pass="" data-on-passed="">
-		<span class="help">Info showed via simple mode.</span>
-		<span class="help-equal">equal</span>
-	</section>
-	<section class="controls">
-		<input type="password" id="password2" placeholder="password again" data-valid="required equal" data-equal-to="#password1" data-on-single-pass="" data-on-passed="">
-		<span class="help">Info showed via simple mode.</span>
-	</section>
-	<section class="controls">
-		<input type="email" id="email" placeholder="email" data-valid="required" data-on-single-pass="" data-on-passed="">
-		<span class="help">Info showed via simple mode.</span>
-	</section>
-	<section class="controls">
-		<button type="submit" class="btn btn-primary">Submit</button>
-	</section>
-</form>
 
-<h2>Complex mode</h2>
-<form action="1" class="koala-form complex">
-	<section class="controls">
-		<input type="text" id="username" placeholder="username" data-valid="required regex" data-on-single-pass="" data-on-passed="">
-		<span class="help-required">This field is required.</span>
-		<span class="help-regex">Doesn't match the regex.</span>
-		<span class="help-tips">Here is the tips.</span>
-	</section>
-	<section class="controls">
-		<input type="password" id="password" placeholder="password" data-valid="required regex minLength" data-min-length="" data-regex="" data-on-single-pass="" data-on-passed="">
-		<span class="help-required">This field is required.</span>
-		<span class="help-regex">Doesn't match the regex.</span>
-		<span class="help-tips">Here is the tips.</span>
-	</section>
-	<section class="controls">
-		<input type="email" id="email" placeholder="email" data-valid="required" data-on-single-pass="" data-on-passed="">
-		<span class="help-required">This field is required.</span>
-		<span class="help-regex">Doesn't match the regex.</span>
-		<span class="help-tips">Here is the tips.</span>
-	</section>
-	<section class="controls">
-		<button type="submit" class="btn btn-primary">Submit</button>
-	</section>
-</form>
+<div class="paper">
+	<section class="boxed">
+		<div class="inner">
+		<section class="section-header center">
+			<h1 class="title">Form Validation <span class="title-highlight">Helper</span></h1>
+		</section>
+		<div class="two-third">
+			<h2>Quick Usage</h2>
+			<section>
+				<pre data-type="JavaScript"><code>
+var element = $('&lt;input type=text data-valid=required /&gt;');
+form.test(element);
+// return: Object {isPassed: false, type: "required"}
+				</code></pre>	
+			</section>
 
-<script src="koala-form.js"></script>
+			<section>
+				<pre data-type="html"><code>
+&lt;input type="text" data-valid="required regex" data-regex="email" id="email"&gt;
+&lt;script src="jquery.js"&gt;&lt;/script&gt;
+&lt;script src="formValidHelper.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+form.test($('#email'));
+// return: Object {isPassed: false, type: "required"}
+// or Object {isPassed: false, type: "regex"}
+&lt;/script&gt;
+				</code></pre>	
+			</section>
+		</div>
+		
+		<div class="one-third last article">
+			<h2>options</h2>
+			<ul>
+				<li><b>data-valid</b>
+					<ol>
+						<li>required</li>
+						<li>regex</li>
+						<li>minLengh</li>
+						<li>maxLength</li>
+						<li>equal</li>
+					</ol>
+				</li>
+				<li><b>data-regex</b>
+					<ol>
+						<li>email</li>
+						<li>chinese</li>
+						<li>zipcode</li>
+						<li>mobile</li>
+						<li>phone</li>
+						<li>numbers</li>
+						<li>numbers_dot</li>
+						<li>abc</li>
+						<li>numbers_abc_underline</li>
+						<li>url</li>
+					</ol>
+				</li>
+				<li><b>data-min-length, data-max-length</b>
+					<ol>
+						<li>1,2,3...</li>
+					</ol>
+				</li>
+				<li><b>data-equal</b>
+					<ol>
+						<li>css selector: '#email', '.another'</li>
+					</ol>
+				</li>
+			</ul>
+		</div>
+
+		</div> <!-- end inner -->
+	</section>
+
+	<section class="boxed">
+		<div class="inner">
+		<section class="section-header left">
+			<h3 class="title">Real world usage <span class="title-highlight">example</span></h3>
+		</section>
+		<form action="#" class="column-wrap" id="realExample">
+			<section class="one-third">
+				<input type="text" data-valid="required" placeholder="Username">
+				<p class="help">Not passed</p>
+			</section>
+			<section class="one-third">
+				<input type="password" data-valid="required" placeholder="Password">
+				<p class="help">Not passed</p>
+			</section>
+			<section class="one-third last">
+				<input type="email" data-valid="required" placeholder="Email">
+				<p class="help">Not passed</p>
+				<p class="help-regex">regex error</p>
+			</section>
+			<section>
+				<textarea data-valid="required minLength" data-min-length="10"></textarea>
+				<p class="help">Not passed</p>
+				<p class="help-minLength">minLenght error</p>
+			</section>
+			<section>
+				<input type="submit" class="pureBtn big red">
+			</section>
+		</form>
+		</div>
+	</section>
+	
+</div> <!-- end paper -->
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/pretify/prettify.js"></script>
+<script src="js/formValidHelper.js"></script>
 <script>
-var formSimple = new KoalaForm({
-	$form: $('.koala-form.simple'),
-	controlSelector: '.controls',
-	mode: 'simple'
+prettyPrint();
+
+// simple real world example
+$('#realExample').on('submit', function(e){
+	$.each($(this).find('input, textarea'), function(k,v){
+		var result = form.test($(v));
+		if(!result.isPassed) {
+			e.preventDefault();
+			if ($(v).siblings('.help-'+result.type).length) {
+				// has custom help info
+				$(v).siblings('.help-'+result.type).show()
+			} else {
+				$(v).siblings('.help').show();	
+			}
+			
+			return false;
+		}
+	});
 });
-var formComplex = new KoalaForm({
-	$form: $('.koala-form.complex'),
-	controlSelector: '.controls',
-	mode: 'complex',
-	on_single_error_func: function(type){
-		if(type == 'required') {
-			$(this).siblings('.help-required').fadeIn();
-		}
-		if(type == 'regex') {
-			$(this).siblings('.help-regex').fadeIn();
-		}
-	},
-	on_single_focus_func: function(){
-		$(this).siblings('.help-required').hide();
-		$(this).siblings('.help-regex').hide();
-		$(this).siblings('.help-tips').show();
-	},
-	on_single_blur_func: function(){
-		$(this).siblings('.help-tips').hide();
-	},
-	on_pass_func: function(e){
-		e.preventDefault();
-	}
+$('input, textarea').on('focus', function(){
+	$(this).siblings('[class^=help]').hide();
 });
 </script>
 </body>
