@@ -25,5 +25,16 @@ section {
 .paper {
 	margin-top: 50px;
 }
+
+#downloadZIP_Corner {
+	display: block;
+	width: 128px;
+	height: 128px;
+	background: url(../img/zip.png);
+	position: absolute;
+	left: -22px;
+	top: -50px;
+	text-indent: -999px;
+}
 /* End main
 ================================================== */
