@@ -70,6 +70,9 @@ var form = (function(){
 		if( !$el.val().length || $el.val() === -1 ) {
 			return false;
 		}
+		if( $el.data('default') && $el.val() === $el.data('default') ) {
+			return false;
+		}
 		return true;
 	};
 
