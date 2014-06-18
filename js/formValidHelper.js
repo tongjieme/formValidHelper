@@ -1,4 +1,4 @@
-var form = (function(){
+(function(){
 	var reg = {
 			email: /^[a-zA-Z0-9_]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/,
 			chinese: /^[\u0391-\uFFE5]+$/,
@@ -77,7 +77,7 @@ var form = (function(){
 	};
 
 	var isRegex = function($el){
-		var regex = $el.data('regex');
+		var regex = $el.data('regex'),
 			regex = reg.hasOwnProperty(regex) ? reg[regex] : regex;
 		if( $el.val().match(regex) !== null ) {
 			return true;
@@ -132,12 +132,19 @@ var form = (function(){
 		return false;
 	};
 
-	return {
-		test: test,
-		isEqual: isEqual,
-		isType: isType,
-		isRegex: isRegex,
-		isRequired: isRequired,
-		isMinLength: isMinLength
-	};
+	var form = {
+			test: test,
+			isEqual: isEqual,
+			isType: isType,
+			isRegex: isRegex,
+			isRequired: isRequired,
+			isMinLength: isMinLength
+		};
+	if( typeof define === 'function' && define.amd ) {
+		define(function() {
+			return form;
+		});
+	} else {
+		window.form = form;
+	}
 })();
