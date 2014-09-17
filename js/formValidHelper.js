@@ -67,6 +67,13 @@
 	};
 
 	var isRequired = function($el){
+		if( $el.is('[type=radio]') ) {
+			if($el.closest('form').find('[name='+$el.attr('name')+']:checked').length) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 		if( !$el.val().length || $el.val() === -1 ) {
 			return false;
 		}
