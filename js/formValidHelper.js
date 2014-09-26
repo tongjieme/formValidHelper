@@ -1,5 +1,11 @@
-(function(){
-	var reg = {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['jquery'], factory);
+    } else {
+        root.form = factory;
+    }
+}(this, function($) {
+    var reg = {
 			email: /^[a-zA-Z0-9_]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/,
 			chinese: /^[\u0391-\uFFE5]+$/,
 			zipcode: /^[1-9]\d{5}$/,
@@ -63,6 +69,28 @@
 			result.type = 'maxLength';
 			return result;
 		}
+		return result;
+	};
+
+	var tests = function($els){
+		var result = {
+			isPassed: true,
+			list: []
+		};
+
+		$.each($els, function(k,v){
+			var r = test($(v));
+
+			if(!r.isPassed) {
+				result.isPassed = false;
+				result.list.push({
+					type: r.type,
+					$el: $(v)
+				});	
+			}
+			
+		});
+
 		return result;
 	};
 
@@ -139,19 +167,23 @@
 		return false;
 	};
 
+	var isLessThan = function(){
+
+	};
+
+	var isMoreThan = function(){
+		
+	};
+
 	var form = {
 			test: test,
+			tests: tests,
 			isEqual: isEqual,
 			isType: isType,
 			isRegex: isRegex,
 			isRequired: isRequired,
 			isMinLength: isMinLength
 		};
-	if( typeof define === 'function' && define.amd ) {
-		define(function() {
-			return form;
-		});
-	} else {
-		window.form = form;
-	}
-})();
+
+	return form;
+}));
