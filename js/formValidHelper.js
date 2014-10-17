@@ -1,10 +1,10 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['jquery'], factory);
+        define(factory);
     } else {
         root.form = factory;
     }
-}(this, function($) {
+}(this, function() {
     var reg = {
 			email: /^[a-zA-Z0-9_]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/,
 			chinese: /^[\u0391-\uFFE5]+$/,
@@ -15,7 +15,9 @@
 			numbers_dot: /^[0-9\.]*$/,
 			abc: /^[A-Za-z]+$/,
 			numbers_abc_underline: /^\w+$/,
-			url: /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+			url: /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/,
+			username: /^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
+			price: /^\d+(\.\d+)?$/
 		},
 		types = ['email', 'url'];
 
@@ -102,7 +104,7 @@
 				return false;
 			}
 		}
-		if( !$el.val().length || $el.val() === -1 ) {
+		if( $el.val() === null || !$el.val().length || ($el.prop('tagName') == 'SELECT' && $el.val() == -1) ) {
 			return false;
 		}
 		if( $el.data('default') && $el.val() === $el.data('default') ) {
@@ -112,9 +114,12 @@
 	};
 
 	var isRegex = function($el){
+		if($el.val().length == 0) {
+			return true;
+		}
 		var regex = $el.data('regex'),
 			regex = reg.hasOwnProperty(regex) ? reg[regex] : regex;
-		if( $el.val().match(regex) !== null ) {
+		if( regex.test($el.val()) ) {
 			return true;
 		}
 		return false;
@@ -175,6 +180,30 @@
 		
 	};
 
+	var right = $('<span class="formTips Yw_right"></span>'),
+    	wrong = $('<span class="formTips Yw_wrong"></span>');
+
+	var tipsRight = function($el, text){
+		if($el.next().hasClass('formTips')) {
+	      $el.next().remove();
+	    }
+	    right.clone().html(text).insertAfter($el);
+	};
+	var tipsError = function($el, text){
+		if($el.next().hasClass('formTips')) {
+	      $el.next().remove();
+	    }
+		wrong.clone().html(text).insertAfter($el);
+	};
+	var tipsRemove = function($el){
+		if($el.next().hasClass('formTips')) {
+	      $el.next().remove();
+	    }
+	};
+	var isTipsError = function($el){
+		return $el.next().hasClass('Yw_wrong');
+	};
+
 	var form = {
 			test: test,
 			tests: tests,
@@ -182,7 +211,11 @@
 			isType: isType,
 			isRegex: isRegex,
 			isRequired: isRequired,
-			isMinLength: isMinLength
+			isMinLength: isMinLength,
+			tipsRight: tipsRight,
+			tipsError: tipsError,
+			tipsRemove: tipsRemove,
+			isTipsError: isTipsError
 		};
 
 	return form;
