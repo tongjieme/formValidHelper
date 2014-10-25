@@ -2,7 +2,7 @@
     if (typeof define === 'function' && define.amd) {
         define(factory);
     } else {
-        root.form = factory;
+        root.form = factory();
     }
 }(this, function() {
     var reg = {

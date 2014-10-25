@@ -127,20 +127,19 @@ prettyPrint();
 
 // simple real world example
 $('#realExample').on('submit', function(e){
-	$.each($(this).find('input, textarea'), function(k,v){
-		var result = form.test($(v));
-		if(!result.isPassed) {
-			e.preventDefault();
-			if ($(v).siblings('.help-'+result.type).length) {
-				// has custom help info
-				$(v).siblings('.help-'+result.type).show()
-			} else {
-				$(v).siblings('.help').show();	
-			}
-			
-			return false;
+	var result = form.tests($(this).find('[data-valid]'));
+	if(!result.isPassed) {
+		e.preventDefault();
+
+		var $el = result.list[0].$el,
+			type = result.list[0].type;
+		if ($el.siblings('.help-'+type).length) {
+			// has custom help info
+			$el.siblings('.help-'+type).show()
+		} else {
+			$el.siblings('.help').show();	
 		}
-	});
+	}
 });
 $('input, textarea').on('focus', function(){
 	$(this).siblings('[class^=help]').hide();
