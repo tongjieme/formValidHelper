@@ -23,6 +23,11 @@
 			username: /^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
 			price: /^\d+(\.\d+)?$/
 		},
+		msg = {
+			noChinese: '* Chinese character is not allowed.',
+			required: '* This fields is required.',
+			email: '* Invalid Email address.'
+		},
 		types = ['email', 'url'];
 
 	var inArray = function(array, v) { 
@@ -32,7 +37,7 @@
 	    return false; 
 	};
 
-	var test = function($el){
+	var test = function($el, func){
 		var result = {
 			isPassed: true,
 			type: ''
@@ -69,13 +74,19 @@
 					return false;
 				}
 			} else {
-				r = isRegex($el,reg[v]);
+				r = isRegex($el,v);
 				if(r.isPassed == false) {
 					result = r;
 					return false;
 				}
 			}
 		});
+
+		// if(result.isDeferred && typeof result.func == 'function' ) {
+		// 	result.deferred.always(function(abc){
+		// 		result.func(abc);
+		// 	});
+		// }
 
 		return result;
 	};
@@ -114,23 +125,28 @@
 				flag = false;
 			}
 		}
-		if( $el.val() === null || !$el.val().length || ($el.prop('tagName') == 'SELECT' && $el.val() == -1) ) {
+		if(flag && $el.is('[type=checkbox]') && !$el.is(':checked')) {
 			flag = false;
 		}
-		if( $el.data('default') && $el.val() === $el.data('default') ) {
+		if(flag && $el.val() === null || !$el.val().length || ($el.prop('tagName') == 'SELECT' && $el.val() == -1) ) {
+			flag = false;
+		}
+		if(flag && $el.data('default') && $el.val() === $el.data('default') ) {
 			flag = false;
 		}
 
 		return {
 			isPassed: flag,
-			type: 'required'
+			type: 'required',
+			msg: msg['required']
 		}
 	};
 
 	var isNoChinese = function($el){
 		return {
 			isPassed: /^[^\u4e00-\u9fa5]{0,}$/.test($el.val()),
-			type: 'noChinese'
+			type: 'noChinese',
+			msg: msg['noChinese']
 		};
 	};
 
@@ -141,38 +157,43 @@
 				type: ''
 			};
 		}
-		var regex = regex || $el.data('regex'),
-			regex = reg.hasOwnProperty(regex) ? reg[regex] : regex;
+		var regexText = regex,
+			regex = reg.hasOwnProperty(regexText) ? reg[regexText] : regex;
 		if( regex.test($el.val()) ) {
 			return {
 				isPassed: true,
-				type: regex
+				type: regexText,
+				msg: msg[regexText]
 			};
 		}
 		return {
 			isPassed: false,
-			type: regex
+			type: regexText,
+			msg: msg[regexText]
 		};
 	};
 
 	var isEqual = function($el){
 		return {
 			isPassed: $el.val() === $('[name='+arguments[1]+']').val(),
-			type: 'equal'
+			type: 'equal',
+			msg: '* fields do not match'
 		};
 	};
 
 	var isMinLength = function($el, length){
 		return {
 			isPassed: $el.val().length >= parseInt(length),
-			type: 'minLength'
+			type: 'minLength',
+			msg: msg['minLength']
 		}
 	};
 
 	var isMaxLength = function($el, length){
 		return {
 			isPassed: $el.val().length <= parseInt(length),
-			type: 'maxLength'
+			type: 'maxLength',
+			msg: msg['maxLength']
 		}
 	};
 
@@ -184,6 +205,10 @@
 		
 	};
 
+	var isAjax = function($el){
+
+	};
+
 	var form = {
 			test: test,
 			tests: tests,
@@ -191,8 +216,102 @@
 			isRegex: isRegex,
 			isRequired: isRequired,
 			isMinLength: isMinLength,
-			isNoChinese: isNoChinese
+			isNoChinese: isNoChinese,
+			msg: msg
 		};
 
 	return form;
 }));
+
+
+
+
+
+if($.fn.tooltipster !== undefined) {
+	var formValid = (function(){
+		window.tooltips = (function(){
+			var show = function($el, o){
+				if($el.data('tooltipster-ns') !== undefined) {
+					$el.tooltipster('destroy');
+				}
+				$el.tooltipster(o).tooltipster('show');
+			};
+
+			var error = function($el, msg){
+				show($el, {
+				    position: 'top-right',
+				    theme: 'tooltipster-error',
+				    maxWidth: 300,
+				    contentAsHTML: true,
+				    content: msg,
+				    hideOnClick: true,
+				    trigger: 'custom',
+				    autoClose: true,
+				    timer: 3000,
+				    interactive: true,
+				    debug: false
+				});
+			};
+
+			var hide = function($el){
+				if($el.data('tooltipster-ns') === undefined) {
+					return;
+				}
+				$el.tooltipster('hide');
+			};
+
+			return {
+				show: show,
+				hide: hide,
+				error: error
+			}
+		})();
+
+		var test = function($el){
+			var r = form.test($el);
+			if(r.isPassed == false && r.isDeferred !== true) {
+				tooltips.error($el, r.msg);
+			}
+			return r;
+		};
+
+		var tests = function($els){
+			var result = {
+				isPassed: true,
+				list: []
+			};
+			$.each($els, function(k,v){
+				var r = test($(v));
+
+				if(!r.isPassed) {
+					result.isPassed = false;
+					result.list.push({
+						type: r.type,
+						$el: $(v),
+						isPending: r.isPending,
+						msg: r.msg
+					});	
+				}
+			});
+			return result;
+		};
+
+		var blurValid = function($form){
+			$form.on('focus', '[data-valid]', function(){
+				tooltips.hide($(this));
+			}).on('blur', '[data-valid]', function(){
+				test($(this));
+			});
+		};
+
+
+		
+
+
+		return {
+			test: test,
+			tests: tests,
+			blurValid: blurValid
+		}
+	})();
+}
