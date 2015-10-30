@@ -97,6 +97,9 @@ form.test($('#email'));
 				<p class="help">Not passed</p>
 			</section>
 			<section class="one-third">
+				<input type="text" data-valid="required url" placeholder="url">
+			</section>
+			<section class="one-third">
 				<input type="password" data-valid="required ajax" name="password" placeholder="Password">
 				<p class="help">Not passed</p>
 			</section>
@@ -174,6 +177,8 @@ $('#realExample').on('submit', function(e){
 		e.preventDefault();
 	}
 });
+// formValid.showOneMessage = true;
+// formValid.autoPositionUpdate = true;
 formValid.blurValid($('#realExample'));
 
 $('input, textarea').on('focus', function(){
