@@ -84,7 +84,6 @@ form.test($('#email'));
 		</div>
 
 		</div> <!-- end inner -->
-		<a href="https://github.com/tongjieme/formValidHelper/archive/gh-pages.zip" id="downloadZIP_Corner" title="Download ZIP">Download ZIP</a>
 	</section>
 
 	<section class="boxed">
@@ -94,7 +93,7 @@ form.test($('#email'));
 		</section>
 		<form action="#" class="column-wrap" id="realExample">
 			<section class="one-third">
-				<input type="text" data-valid="required" placeholder="Username">
+				<input type="text" id="username" data-valid="required equal_email noChinese" placeholder="Username">
 				<p class="help">Not passed</p>
 			</section>
 			<section class="one-third">
@@ -102,7 +101,7 @@ form.test($('#email'));
 				<p class="help">Not passed</p>
 			</section>
 			<section class="one-third last">
-				<input type="email" data-valid="required" placeholder="Email">
+				<input type="email" data-valid="required email" placeholder="Email" name="email">
 				<p class="help">Not passed</p>
 				<p class="help-regex">regex error</p>
 			</section>

@@ -5,12 +5,16 @@
         root.form = factory();
     }
 }(this, function() {
+	function capitalizeFirstLetter(string) {
+	    return string.charAt(0).toUpperCase() + string.slice(1);
+	}
     var reg = {
 			email: /^[a-zA-Z0-9_]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/,
 			chinese: /^[\u0391-\uFFE5]+$/,
 			zipcode: /^[1-9]\d{5}$/,
 			mobile: /^1[3-9][0-9]{9}$/,
-			phone: /^(0[1-9][0-9]{1,2}-?[2-9][0-9]{4,})|([4|8]00[0-9]{7})$/,
+			phone: /^([\+][0-9]{1,3}([ \.\-])?)?([\(][0-9]{1,6}[\)])?([0-9 \.\-]{1,32})(([A-Za-z \:]{1,11})?[0-9]{1,4}?)$/,
+			phoneCn: /^(0[1-9][0-9]{1,2}-?[2-9][0-9]{4,})|([4|8]00[0-9]{7})$/,
 			numbers: /^[0-9]*$/,
 			numbers_dot: /^[0-9\.]*$/,
 			abc: /^[A-Za-z]+$/,
@@ -38,39 +42,41 @@
 			return result;
 		}
 		
-		var options = $el.data('valid').split(' '),
-			type = $el.attr('type');
+		var options = $el.data('valid').split(' ');
 
-		if( ( inArray(options, 'required') || $el.prop('required') ) && !isRequired($el) ) {
-			result.isPassed = false;
-			result.type = 'required';
-			return result;
-		}
-		if( inArray(options, 'regex') && !isRegex($el) ) {
-			result.isPassed = false;
-			result.type = 'regex';
-			return result;
-		}
-		if( inArray(types, type) && !isType($el) ) {
-			result.isPassed = false;
-			result.type = 'regex';
-			return result;
-		}
-		if( inArray(options, 'equal') && !isEqual($el) ) {
-			result.isPassed = false;
-			result.type = 'equal';
-			return result;
-		}
-		if( inArray(options, 'minLength') && !isMinLength($el) ) {
-			result.isPassed = false;
-			result.type = 'minLength';
-			return result;
-		}
-		if( inArray(options, 'maxLength') && !isMaxLength($el) ) {
-			result.isPassed = false;
-			result.type = 'maxLength';
-			return result;
-		}
+		$.each(options, function(k,v){
+			var r;
+			if(v.indexOf('_') > -1) {
+				var args = v.split('_'),
+					functionName = 'is' + capitalizeFirstLetter(args[0]),
+					type = capitalizeFirstLetter(args[0]);
+
+				args[0] = $el;
+
+				r = form[functionName].apply(undefined, args);
+				if(r.isPassed) {
+					return true;
+				} else {
+					result = r;
+					return false;
+				}
+				
+			}
+			if(form['is' + capitalizeFirstLetter(v)] !== undefined) {
+				r = form['is' + capitalizeFirstLetter(v)]($el);
+				if(r.isPassed == false) {
+					result = r;
+					return false;
+				}
+			} else {
+				r = isRegex($el,reg[v]);
+				if(r.isPassed == false) {
+					result = r;
+					return false;
+				}
+			}
+		});
+
 		return result;
 	};
 
@@ -97,79 +103,77 @@
 	};
 
 	var isRequired = function($el){
+		var flag = true;
 		if( $el.is('[type=radio]') ) {
 			if($el.closest('form').find('[name='+$el.attr('name')+']:checked').length) {
-				return true;
+				return {
+					isPassed: flag,
+					type: 'required'
+				};
 			} else {
-				return false;
+				flag = false;
 			}
 		}
 		if( $el.val() === null || !$el.val().length || ($el.prop('tagName') == 'SELECT' && $el.val() == -1) ) {
-			return false;
+			flag = false;
 		}
 		if( $el.data('default') && $el.val() === $el.data('default') ) {
-			return false;
+			flag = false;
 		}
-		return true;
+
+		return {
+			isPassed: flag,
+			type: 'required'
+		}
 	};
 
-	var isRegex = function($el){
+	var isNoChinese = function($el){
+		return {
+			isPassed: /^[^\u4e00-\u9fa5]{0,}$/.test($el.val()),
+			type: 'noChinese'
+		};
+	};
+
+	var isRegex = function($el, regex){
 		if($el.val().length == 0) {
-			return true;
+			return {
+				isPassed: true,
+				type: ''
+			};
 		}
-		var regex = $el.data('regex'),
+		var regex = regex || $el.data('regex'),
 			regex = reg.hasOwnProperty(regex) ? reg[regex] : regex;
 		if( regex.test($el.val()) ) {
-			return true;
+			return {
+				isPassed: true,
+				type: regex
+			};
 		}
-		return false;
-	};
-
-	var isType = function($el){
-		var type = $el.attr('type'),
-			regex = reg[type];
-		if( $el.val().match(regex) !== null ) {
-			return true;
-		}
-		return false;
+		return {
+			isPassed: false,
+			type: regex
+		};
 	};
 
 	var isEqual = function($el){
-		// if the equal-to value is '' then passed
-		// if(!$($el.data('equal-to')).eq(0).val()) {
-		// 	return true;
-		// }
-
-		var valueArray = [];
-		$.each( $el.add($($el.data('equal-to')) ), function(k,v){
-			valueArray.push($(v).val());
-		});
-		
-		if(valueArray.length > 0) {
-	        for(var i = 1; i < valueArray.length; i++)
-	        {
-	            if(valueArray[i] !== valueArray[0]) {
-	                return false;
-	            }
-	        }
-	    }
-	    return true;
+		return {
+			isPassed: $el.val() === $('[name='+arguments[1]+']').val(),
+			type: 'equal'
+		};
 	};
 
-	var isMinLength = function($el){
-		if( $el.val().length >= parseInt($el.data('min-length')) ) {
-			return true;
+	var isMinLength = function($el, length){
+		return {
+			isPassed: $el.val().length >= parseInt(length),
+			type: 'minLength'
 		}
-		
-		return false;
 	};
 
-	var isMaxLength = function($el){
-		if( $el.val().length <= parseInt($el.data('max-length')) ) {
-			return true;
+	var isMaxLength = function($el, length){
+		return {
+			isPassed: $el.val().length <= parseInt(length),
+			type: 'maxLength'
 		}
-		
-		return false;
 	};
 
 	var isLessThan = function(){
@@ -180,42 +184,14 @@
 		
 	};
 
-	var right = $('<span class="formTips Yw_right"></span>'),
-    	wrong = $('<span class="formTips Yw_wrong"></span>');
-
-	var tipsRight = function($el, text){
-		if($el.next().hasClass('formTips')) {
-	      $el.next().remove();
-	    }
-	    right.clone().html(text).insertAfter($el);
-	};
-	var tipsError = function($el, text){
-		if($el.next().hasClass('formTips')) {
-	      $el.next().remove();
-	    }
-		wrong.clone().html(text).insertAfter($el);
-	};
-	var tipsRemove = function($el){
-		if($el.next().hasClass('formTips')) {
-	      $el.next().remove();
-	    }
-	};
-	var isTipsError = function($el){
-		return $el.next().hasClass('Yw_wrong');
-	};
-
 	var form = {
 			test: test,
 			tests: tests,
 			isEqual: isEqual,
-			isType: isType,
 			isRegex: isRegex,
 			isRequired: isRequired,
 			isMinLength: isMinLength,
-			tipsRight: tipsRight,
-			tipsError: tipsError,
-			tipsRemove: tipsRemove,
-			isTipsError: isTipsError
+			isNoChinese: isNoChinese
 		};
 
 	return form;
