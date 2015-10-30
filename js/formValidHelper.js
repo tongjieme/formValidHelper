@@ -232,8 +232,8 @@
 
 
 if($.fn.tooltipster !== undefined) {
-	var formValid = (function(){
-		window.tooltips = (function(){
+	window.formValid = (function(){
+		var tooltips = (function(){
 			var show = function($el, o){
 				if($el.data('tooltipster-ns') !== undefined) {
 					$el.tooltipster('destroy');
@@ -303,13 +303,15 @@ if($.fn.tooltipster !== undefined) {
 				}
 			});
 
-			if(this.autoPositionUpdate === true && result.list.length > 0) {
+			if(this.autoPositionUpdate && result.list.length > 0) {
 				var $el = result.list[0].$el;
-				$el.trigger('focus');
-				tooltips.error($el, result.list[0].msg);
-				// $('html, body').animate({
-				// 	scrollTop: $el.offset().top
-				// });
+				tooltips.hide($el);
+				$('html, body').animate({
+					scrollTop: $el.offset().top - $(window).height()/2
+				}, function(){
+					$el.trigger('focus');
+					tooltips.error($el, result.list[0].msg);
+				});
 			}
 			return result;
 		};
@@ -329,7 +331,8 @@ if($.fn.tooltipster !== undefined) {
 		return {
 			test: test,
 			tests: tests,
-			blurValid: blurValid
+			blurValid: blurValid,
+			tooltips: tooltips
 		}
 	})();
 }
