@@ -282,12 +282,19 @@ if($.fn.tooltipster !== undefined) {
 			return r;
 		};
 
-		var tests = function($els){
+		var tests = function($els,o){
 			var result = {
 				isPassed: true,
 				list: []
 			};
-			if(this.showOneMessage === true) {
+
+			if(o === undefined) {
+				o = {}
+			}
+
+			var showOneMessage = typeof o.showOneMessage === 'undefined' ? this.showOneMessage : o.showOneMessage,
+				autoPositionUpdate = typeof o.autoPositionUpdate === 'undefined' ? this.autoPositionUpdate : o.autoPositionUpdate;
+			if(showOneMessage) {
 				$els = $els.eq(0);
 			}
 			$.each($els, function(k,v){
@@ -303,7 +310,7 @@ if($.fn.tooltipster !== undefined) {
 				}
 			});
 
-			if(this.autoPositionUpdate && result.list.length > 0) {
+			if(autoPositionUpdate && result.list.length > 0) {
 				var $el = result.list[0].$el;
 				tooltips.hide($el);
 				$('html, body').animate({
