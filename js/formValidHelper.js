@@ -30,7 +30,9 @@
 		msg = {
 			noChinese: '* Chinese character is not allowed.',
 			required: '* This fields is required.',
-			email: '* Invalid Email address.'
+			email: '* Invalid Email address.',
+            minLength: '* Minimum {{1}} characters required.',
+            maxLength: '* Maximum {{1}} characters allowed.'
 		},
 		types = ['email', 'url'];
 
@@ -189,7 +191,7 @@
 		return {
 			isPassed: $el.val().length >= parseInt(length),
 			type: 'minLength',
-			msg: msg['minLength']
+			msg: msg['minLength'].replace('{{1}}', length)
 		}
 	};
 
@@ -197,7 +199,7 @@
 		return {
 			isPassed: $el.val().length <= parseInt(length),
 			type: 'maxLength',
-			msg: msg['maxLength']
+			msg: msg['maxLength'].replace('{{1}}', length)
 		}
 	};
 
@@ -220,13 +222,13 @@
 			isRegex: isRegex,
 			isRequired: isRequired,
 			isMinLength: isMinLength,
+            isMaxLength: isMaxLength,
 			isNoChinese: isNoChinese,
 			msg: msg
 		};
 
 	return form;
 }));
-
 
 
 
@@ -330,16 +332,24 @@ if($.fn.tooltipster !== undefined) {
 				test($(this));
 			});
 		};
-
-
-		
+        
+        var submitValid = function($form){
+            blurValid($form);
+            $form.on('submit', function(e){
+                var r = formValid.tests($form.find('[data-valid]'));
+                if(r.isPassed === false) {
+                    e.preventDefault();
+                }
+            });
+        };
 
 
 		return {
 			test: test,
 			tests: tests,
 			blurValid: blurValid,
-			tooltips: tooltips
+			tooltips: tooltips,
+            submitValid: submitValid
 		}
 	})();
 }

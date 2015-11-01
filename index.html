@@ -124,6 +124,20 @@ form.test($('#email'));
 				<input type="submit" class="pureBtn big red">
 			</section>
 		</form>
+		<form action="#" id="submitValid">
+            <section class="one-third">
+                <input type="text" data-valid="required email" placeholder="Email:"><br>    
+            </section>
+		    
+            <section class="one-third">
+                <input type="password" data-valid="required minLength_10 maxLength_15" placeholder="Password:">    
+            </section>
+            
+            <section class="one-third">
+                <input type="submit" class="pureBtn big red">    
+            </section>
+            
+        </form>
 		</div>
 	</section>
 	
@@ -138,8 +152,9 @@ form.test($('#email'));
 <script src="js/formValidHelper.js"></script>
 
 <script>
+formValid.submitValid($('#submitValid'));
 prettyPrint();
-
+    
 form.isAbc = function($el){
 	console.log(arguments);
 	return {
