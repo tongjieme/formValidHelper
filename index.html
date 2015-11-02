@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="app">
 <head>
 	<meta charset="utf-8">
 	<title></title>
@@ -9,6 +9,7 @@
 	<!--[if lt IE 9]>
 	<script src="js/html5shiv.js"></script>
 	<![endif]-->
+
 </head>
 <body>
 
@@ -40,6 +41,16 @@ form.test($('#email'));
 &lt;/script&gt;
 				</code></pre>	
 			</section>
+			<textarea codex="html" content="content">
+&lt;input type="text" data-valid="required regex" data-regex="email" id="email"&gt;
+&lt;script src="jquery.js"&gt;&lt;/script&gt;
+&lt;script src="formValidHelper.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+form.test($('#email'));
+// return: Object {isPassed: false, type: "required"}
+// or Object {isPassed: false, type: "regex"}
+&lt;/script&gt;
+			</textarea>
 			<a href="https://github.com/tongjieme/formValidHelper/archive/gh-pages.zip" class="pureBtn big red">Download ZIP</a>
 		</div>
 		
@@ -137,6 +148,7 @@ form.test($('#email'));
                 <input type="submit" class="pureBtn big red">    
             </section>
             
+            <textarea ng-model="content"></textarea>
         </form>
 		</div>
 	</section>
@@ -150,6 +162,11 @@ form.test($('#email'));
 <script src="js/tooltipster/jquery.tooltipster.js"></script>
 <link href="js/tooltipster/tooltipster.css" rel="stylesheet">
 <script src="js/formValidHelper.js"></script>
+
+<script src="js/highlight/highlight.pack.js"></script>
+<link href="js/highlight/styles/monokai_sublime.css" rel="stylesheet">
+<script src="js/ng/angular-min.js"></script>
+<script src="js/ng/app.js"></script>
 
 <script>
 formValid.submitValid($('#submitValid'));
