@@ -189,7 +189,7 @@
 
 	var isMinLength = function($el, length){
 		return {
-			isPassed: $el.val().length >= parseInt(length),
+			isPassed: $el.val().length === 0 || $el.val().length >= parseInt(length),
 			type: 'minLength',
 			msg: msg['minLength'].replace('{{1}}', length)
 		}
@@ -243,23 +243,37 @@ if($.fn.tooltipster !== undefined) {
 				$el.tooltipster(o).tooltipster('show');
 			};
 
-			var error = function($el, msg){
-				show($el, {
-				    position: 'top-right',
-				    theme: 'tooltipster-error',
-				    maxWidth: 300,
-				    contentAsHTML: true,
-				    content: msg || 'This field is invalid.',
-				    hideOnClick: true,
-				    trigger: 'custom',
-				    autoClose: true,
-				    timer: 3000,
-				    interactive: true,
-				    debug: false,
-				    functionAfter: function(){
+			var error = function($el, msg, isScroll){
 
-				    }
-				});
+				var showTooltips = function(){
+					show($el, {
+					    position: 'top-right',
+					    theme: 'tooltipster-error',
+					    maxWidth: 300,
+					    contentAsHTML: true,
+					    content: msg || 'This field is invalid.',
+					    hideOnClick: true,
+					    trigger: 'custom',
+					    autoClose: true,
+					    timer: 3000,
+					    interactive: true,
+					    debug: false,
+					    functionAfter: function(){
+
+					    }
+					});	
+				}
+				
+				if(!isScroll) {
+					showTooltips();
+				} else {
+					$('html, body').animate({
+						scrollTop: $el.offset().top - $(window).height()/2
+					}, function(){
+						showTooltips();
+					});
+				}
+				
 			};
 
 			var hide = function($el){
@@ -296,9 +310,7 @@ if($.fn.tooltipster !== undefined) {
 
 			var showOneMessage = typeof o.showOneMessage === 'undefined' ? this.showOneMessage : o.showOneMessage,
 				autoPositionUpdate = typeof o.autoPositionUpdate === 'undefined' ? this.autoPositionUpdate : o.autoPositionUpdate;
-			if(showOneMessage) {
-				$els = $els.eq(0);
-			}
+			
 			$.each($els, function(k,v){
 				var r = test($(v));
 
@@ -308,7 +320,10 @@ if($.fn.tooltipster !== undefined) {
 						type: r.type,
 						$el: $(v),
 						msg: r.msg
-					});	
+					});
+					if(showOneMessage) {
+						return false;
+					}
 				}
 			});
 
@@ -333,10 +348,10 @@ if($.fn.tooltipster !== undefined) {
 			});
 		};
         
-        var submitValid = function($form){
+        var submitValid = function($form, o){
             blurValid($form);
             $form.on('submit', function(e){
-                var r = formValid.tests($form.find('[data-valid]'));
+                var r = formValid.tests($form.find('[data-valid]'), o);
                 if(r.isPassed === false) {
                     e.preventDefault();
                 }
