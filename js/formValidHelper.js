@@ -267,9 +267,7 @@ if($.fn.tooltipster !== undefined) {
 				if(!isScroll) {
 					showTooltips();
 				} else {
-					$('html, body').animate({
-						scrollTop: $el.offset().top - $(window).height()/2
-					}, function(){
+					to($el, function(){
 						showTooltips();
 					});
 				}
@@ -330,14 +328,22 @@ if($.fn.tooltipster !== undefined) {
 			if(autoPositionUpdate && result.list.length > 0) {
 				var $el = result.list[0].$el;
 				tooltips.hide($el);
-				$('html, body').animate({
-					scrollTop: $el.offset().top - $(window).height()/2
-				}, function(){
+				to($el, function(){
 					$el.trigger('focus');
 					tooltips.error($el, result.list[0].msg);
 				});
 			}
 			return result;
+		};
+
+		var to = function($el, func){
+			$('html, body').animate({
+				scrollTop: $el.offset().top - $(window).height()/2
+			}, function(){
+				if(func) {
+					func($el);
+				}
+			});
 		};
 
 		var blurValid = function($form){
@@ -364,7 +370,8 @@ if($.fn.tooltipster !== undefined) {
 			tests: tests,
 			blurValid: blurValid,
 			tooltips: tooltips,
-            submitValid: submitValid
+            submitValid: submitValid,
+            to: to
 		}
 	})();
 }
