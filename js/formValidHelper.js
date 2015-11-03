@@ -255,7 +255,7 @@ if($.fn.tooltipster !== undefined) {
 					    hideOnClick: true,
 					    trigger: 'custom',
 					    autoClose: true,
-					    timer: 3000,
+					    timer: 5000,
 					    interactive: true,
 					    debug: false,
 					    functionAfter: function(){
@@ -335,7 +335,9 @@ if($.fn.tooltipster !== undefined) {
 				var $el = result.list[0].$el;
 				tooltips.hide($el);
 				to($el, function(){
-					$el.trigger('focus');
+					if(o.autoFocus) {
+						$el.trigger('focus');	
+					}
 					tooltips.error($el, result.list[0].msg);
 				});
 			}
