@@ -29,7 +29,7 @@
 		},
 		msg = {
 			noChinese: '* Chinese character is not allowed.',
-			required: '* This fields is required.',
+			required: '* This field is required.',
 			email: '* Invalid Email address.',
             minLength: '* Minimum {{1}} characters required.',
             maxLength: '* Maximum {{1}} characters allowed.'
@@ -288,10 +288,16 @@ if($.fn.tooltipster !== undefined) {
 			}
 		})();
 
-		var test = function($el){
+		var test = function($el, isScroll){
 			var r = form.test($el);
 			if(r.isPassed == false && r.isDeferred !== true) {
-				tooltips.error($el, r.msg);
+				if(!isScroll) {
+					tooltips.error($el, r.msg);
+				} else {
+					to($el, function(){
+						tooltips.error($el, r.msg);
+					});
+				}
 			}
 			return r;
 		};
