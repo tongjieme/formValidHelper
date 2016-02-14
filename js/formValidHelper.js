@@ -48,6 +48,8 @@
 	};
 
 	var test = function($el, func){
+		var deferred = $.Deferred();
+
 		var result = {
 			isPassed: true,
 			type: ''
@@ -59,9 +61,15 @@
 		
 		var options = $el.data('valid').split(/\s+/);
 
+		var ajaxs = [];
 		$.each(options, function(k,v){
 			var r;
+			if(v.indexOf('ajax') == 0) {
+				ajaxs.push('is' + capitalizeFirstLetter(v));
+				return true;
+			}
 			if(v.indexOf('_') > -1) {
+				// 多参数 规则
 				var args = v.split('_'),
 					functionName = 'is' + capitalizeFirstLetter(args[0]),
 					type = capitalizeFirstLetter(args[0]);
@@ -78,12 +86,14 @@
 				
 			}
 			if(form['is' + capitalizeFirstLetter(v)] !== undefined) {
+				// is 规则
 				r = form['is' + capitalizeFirstLetter(v)]($el);
 				if(r.isPassed == false) {
 					result = r;
 					return false;
 				}
 			} else {
+				// 正则匹配规则
 				r = isRegex($el,v);
 				if(r.isPassed == false) {
 					result = r;
@@ -98,29 +108,110 @@
 		// 	});
 		// }
 
-		return result;
+		var ajaxsDeferreds = (function(){
+			var arr = [];
+
+			$.each(ajaxs, function(k,v){
+				arr.push(form[v].call($));
+			});
+			return arr;
+		})();
+
+		if(!result.isPassed) {
+			deferred.resolve(result);
+			return deferred.promise();
+		}
+		$.when.apply($, ajaxsDeferreds).then(function(){
+			var errors = $.grep(arguments, function(a){
+								return a.isPassed == false;
+							});
+			deferred.resolve({
+				isPassed: errors.length === 0,
+				type: (function(){
+					if(errors.length === 0) {
+						return '';
+					}
+					return errors[0].type;
+				})(),
+				msg: (function(){
+					if(errors.length === 0) {
+						return '';
+					}
+					return errors[0].msg;
+				})(),
+				$el: $el,
+				errors: errors,
+				all: arguments
+			});
+			// deferred.resolve((function(){
+			// 	var grep = );
+			// 	if( grep.length > 0 ) {
+			// 		return grep;
+			// 	}
+			// 	return {
+			// 		isPassed: true
+			// 	};
+			// })(), arguments);
+		}, deferred.reject);
+		return deferred.promise();
 	};
 
 	var tests = function($els){
+		var deferred = $.Deferred();
+
 		var result = {
 			isPassed: true,
 			list: []
 		};
 
+		var deffereds = [];
 		$.each($els, function(k,v){
-			var r = test($(v));
+			deffereds.push( test($(v)) );
 
-			if(!r.isPassed) {
-				result.isPassed = false;
-				result.list.push({
-					type: r.type,
-					$el: $(v)
-				});	
-			}
+			// if(!r.isPassed) {
+			// 	result.isPassed = false;
+			// 	result.list.push({
+			// 		type: r.type,
+			// 		$el: $(v)
+			// 	});	
+			// }
 			
 		});
 
-		return result;
+		$.when.apply($, deffereds).always(function(d){
+			var Arguments = arguments;
+			var r = {
+				isPassed: (function(){
+					var errors = $.grep(Arguments, function(a){
+						return !a.isPassed;
+					});
+					console.log(Arguments);
+					return errors.length == 0;
+				})(),
+				all: Arguments,
+				errors: (function(){
+					return $.grep(Arguments, function(a){
+						return !a.isPassed;
+					});
+				})()
+			};
+
+
+			deferred.resolve(r);
+		});
+
+		// $.when.apply($, deffereds).then(function(d){
+		// 	console.log(d);
+		// 	deferred.resolve();
+		// }, function(d){
+		// 	console.log(d);
+		// 	deferred.reject({
+		// 		isPassed: false,
+		// 		list: 
+		// 	});
+		// });
+
+		return deferred.promise();
 	};
 
 	var isRequired = function($el){
@@ -147,6 +238,7 @@
 
 		return {
 			isPassed: flag,
+			$el: $el,
 			type: 'required',
 			msg: msg['required']
 		}
@@ -159,6 +251,7 @@
 
         return {
             isPassed: val >= min && val <= max,
+            $el: $el,
             type: 'between',
             msg: '必须在' + min + '至' + max + '之间'
         };
@@ -167,15 +260,19 @@
 	var isNoChinese = function($el){
 		return {
 			isPassed: /^[^\u4e00-\u9fa5]{0,}$/.test($el.val()),
+			$el: $el,
 			type: 'noChinese',
 			msg: msg['noChinese']
 		};
 	};
 
+	
+
 	var isRegex = function($el, regex){
 		if($el.val().length == 0) {
 			return {
 				isPassed: true,
+				$el: $el,
 				type: ''
 			};
 		}
@@ -184,12 +281,14 @@
 		if( regex.test($el.val()) ) {
 			return {
 				isPassed: true,
+				$el: $el,
 				type: regexText,
 				msg: msg[regexText]
 			};
 		}
 		return {
 			isPassed: false,
+			$el: $el,
 			type: regexText,
 			msg: msg[regexText]
 		};
@@ -206,6 +305,7 @@
 	var isMinLength = function($el, length){
 		return {
 			isPassed: $el.val().length === 0 || $el.val().length >= parseInt(length),
+			$el: $el,
 			type: 'minLength',
 			msg: msg['minLength'].replace('{{1}}', length)
 		}
@@ -214,6 +314,7 @@
 	var isMaxLength = function($el, length){
 		return {
 			isPassed: $el.val().length <= parseInt(length),
+			$el: $el,
 			type: 'maxLength',
 			msg: msg['maxLength'].replace('{{1}}', length)
 		}
@@ -307,59 +408,35 @@ if($.fn.tooltipster !== undefined) {
 		})();
 
 		var test = function($el, isScroll){
-			var r = form.test($el);
-			if(r.isPassed == false && r.isDeferred !== true) {
-				if(!isScroll) {
-					tooltips.error($el, r.msg);
-				} else {
-					to($el, function(){
+			var deferred = $.Deferred();
+			form.test($el).then(function(r){
+				if(r.isPassed == false) {
+					if(!isScroll) {
 						tooltips.error($el, r.msg);
-					});
+					} else {
+						to($el, function(){
+							tooltips.error($el, r.msg);
+						});
+					}
 				}
-			}
-			return r;
+				deferred.resolve(r);
+			});
+			
+			return deferred.promise();
 		};
 
 		var tests = function($els,o){
-			var result = {
-				isPassed: true,
-				list: []
-			};
-
-			if(o === undefined) {
-				o = {}
-			}
-
-			var showOneMessage = typeof o.showOneMessage === 'undefined' ? this.showOneMessage : o.showOneMessage,
-				autoPositionUpdate = typeof o.autoPositionUpdate === 'undefined' ? this.autoPositionUpdate : o.autoPositionUpdate;
-			
-			$.each($els, function(k,v){
-				var r = test($(v));
-
-				if(!r.isPassed) {
-					result.isPassed = false;
-					result.list.push({
-						type: r.type,
-						$el: $(v),
-						msg: r.msg
+			var deferred = $.Deferred();
+			form.tests($els).then(function(d){
+				if(!d.isPassed) {
+					$.each(d.errors, function(k,v){
+						tooltips.error(v.$el, v.msg);
 					});
-					if(showOneMessage) {
-						return false;
-					}
 				}
+				deferred.resolve(d);
 			});
 
-			if(autoPositionUpdate && result.list.length > 0) {
-				var $el = result.list[0].$el;
-				tooltips.hide($el);
-				to($el, function(){
-					if(o.autoFocus) {
-						$el.trigger('focus');	
-					}
-					tooltips.error($el, result.list[0].msg);
-				});
-			}
-			return result;
+			return deferred.promise();
 		};
 
 		var to = function($el, func){
