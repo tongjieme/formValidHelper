@@ -427,7 +427,26 @@ if($.fn.tooltipster !== undefined) {
 
 		var tests = function($els,o){
 			var deferred = $.Deferred();
+
+			var showOneMessage = typeof o.showOneMessage === 'undefined' ? this.showOneMessage : o.showOneMessage,
+				autoPositionUpdate = typeof o.autoPositionUpdate === 'undefined' ? this.autoPositionUpdate : o.autoPositionUpdate;
+			
 			form.tests($els).then(function(d){
+				if((autoPositionUpdate || showOneMessage) && d.errors.length > 0) {
+					var $el = d.errors[0].$el;
+					tooltips.hide($el);
+					to($el, function(){
+						if(o.autoFocus) {
+							$el.trigger('focus');	
+						}
+						tooltips.error($el, d.errors[0].msg);
+					});
+				}
+				if(showOneMessage) {
+					deferred.resolve(d);
+					return;
+				}
+
 				if(!d.isPassed) {
 					$.each(d.errors, function(k,v){
 						tooltips.error(v.$el, v.msg);
