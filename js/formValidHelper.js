@@ -409,7 +409,10 @@ if($.fn.tooltipster !== undefined) {
 
 		var test = function($el, isScroll){
 			var deferred = $.Deferred();
+
+			// tooltips.error($el, "验证中");
 			form.test($el).then(function(r){
+				tooltips.hide($el);
 				if(r.isPassed == false) {
 					if(!isScroll) {
 						tooltips.error($el, r.msg);
