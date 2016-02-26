@@ -1,0 +1,7 @@
+.DS_Store
+.sass-cache
+config.codekit
+Thumbs.db
+*.scssc
+bower_components
+node_modules

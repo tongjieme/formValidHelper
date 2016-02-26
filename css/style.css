@@ -56,9 +56,8 @@ table {
 /* Begin layout
 ================================================== */
 *, *:before, *:after {
-  -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
-  box-sizing: border-box; }
+       box-sizing: border-box; }
 
 .group, .paper, .inner {
   zoom: 1;
@@ -146,7 +145,6 @@ table {
 section.boxed {
   background: #fff;
   border-radius: 4px;
-  -webkit-box-shadow: inset -1px 0 0 0 #d2d2d2, inset -1px 0 0 0 #e6e6e6, inset 1px 0 0 0 #d2d2d2, 1px 0 0 0 #e6e6e6, 0 -1px 0 0 #e8e8e8, 0 2px 0 0 rgba(241, 241, 241, 0.3), 0 1px 0 0 #b1b1b1;
   box-shadow: inset -1px 0 0 0 #d2d2d2, inset -1px 0 0 0 #e6e6e6, inset 1px 0 0 0 #d2d2d2, 1px 0 0 0 #e6e6e6, 0 -1px 0 0 #e8e8e8, 0 2px 0 0 rgba(241, 241, 241, 0.3), 0 1px 0 0 #b1b1b1;
   position: relative;
   margin-bottom: 9px;
@@ -284,7 +282,6 @@ textarea {
   -webkit-transition: all 200ms ease-in;
   transition: all 200ms ease-in;
   cursor: pointer;
-  margin-bottom: 20px;
   width: auto;
   border: none;
   border-radius: 3px; }
@@ -646,5 +643,7 @@ section {
 
 /* End main
 ================================================== */
+input[type=checkbox] {
+  width: inherit; }
 
 /*# sourceMappingURL=style.css.map */

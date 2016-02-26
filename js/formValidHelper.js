@@ -1,10 +1,10 @@
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(factory);
+    if (typeof root.define === 'function' && root.define.amd) {
+        root.define(factory);
     } else {
         root.form = factory();
     }
-}(this, function() {
+}(window, function() {
 	function capitalizeFirstLetter(string) {
 	    return string.charAt(0).toUpperCase() + string.slice(1);
 	}
@@ -19,7 +19,6 @@
 			numbersFixed2: /^\d+\.?\d?\d?$/,
 			abc: /^[A-Za-z]+$/,
 			numbersAbcUnderline: /^\w+$/,
-			url: /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/,
 			username: /^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
 			price: /^\d+(\.\d+)?$/,
 			chinaIdLoose: /^(\d{18}|\d{15}|\d{17}[xX])$/,
@@ -37,17 +36,9 @@
             maxLength: '* 此项不得多于 {{1}} 个字符.',
             noNumbers: '* 此项不能全为数字',
             numbersFixed2: '* 此项为数字且最多保留两位数字'
-		},
-		types = ['email', 'url'];
+		};
 
-	var inArray = function(array, v) { 
-	    for(var i=0; i < array.length; i++) { 
-	        if(array[i] === v) {return true;} 
-	    }
-	    return false; 
-	};
-
-	var test = function($el, func){
+	var test = function($el){
 		var deferred = $.Deferred();
 
 		var result = {
@@ -71,8 +62,7 @@
 			if(v.indexOf('_') > -1) {
 				// 多参数 规则
 				var args = v.split('_'),
-					functionName = 'is' + capitalizeFirstLetter(args[0]),
-					type = capitalizeFirstLetter(args[0]);
+					functionName = 'is' + capitalizeFirstLetter(args[0]);
 
 				args[0] = $el;
 
@@ -112,7 +102,7 @@
 			var arr = [];
 
 			$.each(ajaxs, function(k,v){
-				arr.push(form[v].call($));
+				arr.push(form[v].apply($.Deferred(), [$el]) );
 			});
 			return arr;
 		})();
@@ -141,17 +131,8 @@
 				})(),
 				$el: $el,
 				errors: errors,
-				all: arguments
+				allResults: arguments
 			});
-			// deferred.resolve((function(){
-			// 	var grep = );
-			// 	if( grep.length > 0 ) {
-			// 		return grep;
-			// 	}
-			// 	return {
-			// 		isPassed: true
-			// 	};
-			// })(), arguments);
 		}, deferred.reject);
 		return deferred.promise();
 	};
@@ -159,36 +140,21 @@
 	var tests = function($els){
 		var deferred = $.Deferred();
 
-		var result = {
-			isPassed: true,
-			list: []
-		};
-
 		var deffereds = [];
 		$.each($els, function(k,v){
 			deffereds.push( test($(v)) );
-
-			// if(!r.isPassed) {
-			// 	result.isPassed = false;
-			// 	result.list.push({
-			// 		type: r.type,
-			// 		$el: $(v)
-			// 	});	
-			// }
-			
 		});
 
-		$.when.apply($, deffereds).always(function(d){
+		$.when.apply($, deffereds).always(function(){
 			var Arguments = arguments;
 			var r = {
 				isPassed: (function(){
 					var errors = $.grep(Arguments, function(a){
 						return !a.isPassed;
 					});
-					console.log(Arguments);
 					return errors.length == 0;
 				})(),
-				all: Arguments,
+				allResults: Arguments,
 				errors: (function(){
 					return $.grep(Arguments, function(a){
 						return !a.isPassed;
@@ -240,8 +206,8 @@
 			isPassed: flag,
 			$el: $el,
 			type: 'required',
-			msg: msg['required']
-		}
+			msg: msg.required
+		};
 	};
 
 	var isBetween = function ($el, min, max) {
@@ -262,7 +228,7 @@
 			isPassed: /^[^\u4e00-\u9fa5]{0,}$/.test($el.val()),
 			$el: $el,
 			type: 'noChinese',
-			msg: msg['noChinese']
+			msg: msg.noChinese
 		};
 	};
 
@@ -276,8 +242,9 @@
 				type: ''
 			};
 		}
-		var regexText = regex,
-			regex = reg.hasOwnProperty(regexText) ? reg[regexText] : regex;
+		var regexText = regex;
+		regex = reg.hasOwnProperty(regexText) ? reg[regexText] : regex;
+
 		if( regex.test($el.val()) ) {
 			return {
 				isPassed: true,
@@ -307,8 +274,8 @@
 			isPassed: $el.val().length === 0 || $el.val().length >= parseInt(length),
 			$el: $el,
 			type: 'minLength',
-			msg: msg['minLength'].replace('{{1}}', length)
-		}
+			msg: msg.minLength.replace('{{1}}', length)
+		};
 	};
 
 	var isMaxLength = function($el, length){
@@ -316,20 +283,8 @@
 			isPassed: $el.val().length <= parseInt(length),
 			$el: $el,
 			type: 'maxLength',
-			msg: msg['maxLength'].replace('{{1}}', length)
-		}
-	};
-
-	var isLessThan = function(){
-
-	};
-
-	var isMoreThan = function(){
-		
-	};
-
-	var isAjax = function($el){
-
+			msg: msg.maxLength.replace('{{1}}', length)
+		};
 	};
 
 	var form = {
@@ -364,24 +319,24 @@ if($.fn.tooltipster !== undefined) {
 			var error = function($el, msg, isScroll){
 
 				var showTooltips = function(){
-					show($el, {
-					    position: 'top-right',
-					    theme: 'tooltipster-error',
-					    maxWidth: 300,
-					    // animation: 'grow',
-					    contentAsHTML: true,
-					    content: msg || '此项格式无效.',
-					    hideOnClick: true,
-					    trigger: 'custom',
-					    autoClose: true,
-					    timer: 5000,
-					    interactive: true,
-					    debug: false,
-					    functionAfter: function(){
+										show($el, {
+										    position: 'top-right',
+										    theme: 'tooltipster-error',
+										    maxWidth: 300,
+										    // animation: 'grow',
+										    contentAsHTML: true,
+										    content: msg || '此项格式无效.',
+										    hideOnClick: true,
+										    trigger: 'custom',
+										    autoClose: true,
+										    timer: 5000,
+										    interactive: true,
+										    debug: false,
+										    functionAfter: function(){
 
-					    }
-					});	
-				}
+										    }
+										});	
+									};
 				
 				if(!isScroll) {
 					showTooltips();
@@ -404,7 +359,7 @@ if($.fn.tooltipster !== undefined) {
 				show: show,
 				hide: hide,
 				error: error
-			}
+			};
 		})();
 
 		var test = function($el, isScroll){
@@ -413,7 +368,7 @@ if($.fn.tooltipster !== undefined) {
 			// tooltips.error($el, "验证中");
 			form.test($el).then(function(r){
 				tooltips.hide($el);
-				if(r.isPassed == false) {
+				if(r.isPassed === false) {
 					if(!isScroll) {
 						tooltips.error($el, r.msg);
 					} else {
@@ -429,6 +384,8 @@ if($.fn.tooltipster !== undefined) {
 		};
 
 		var tests = function($els,o){
+			o = o || {};
+
 			var deferred = $.Deferred();
 
 			var showOneMessage = typeof o.showOneMessage === 'undefined' ? this.showOneMessage : o.showOneMessage,
@@ -497,6 +454,6 @@ if($.fn.tooltipster !== undefined) {
 			tooltips: tooltips,
             submitValid: submitValid,
             to: to
-		}
+		};
 	})();
 }
