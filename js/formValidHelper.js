@@ -39,6 +39,10 @@
 		};
 
 	var test = function($el){
+		if(!$el instanceof jQuery) {
+			$el = $($el);
+		}
+		
 		var deferred = $.Deferred();
 
 		var result = {
