@@ -59,25 +59,26 @@
 
 ##API
 ```
-form.test($('<input type="text" data-valid="minLength_10" placeholder="最少长度10">'));
-// return Object {isPassed: false, type: "required", msg: "* This fields is required."}
+待补充
 
-form.tests($('[data-valid]'));
-// return Object {isPassed: false, list: [{$el: $el, type: 'required'}]}
+form.test($element).then(function(result){
+	
+});
+form.tests($elements).then(function(result){
+	
+});
 
-formValid.test($input)
-// return Object {isPassed: false, type: "required", msg: "* This fields is required."}
-// 显示tooltips
+formValid.tests($elements).then(function(result){
+	
+});
+formValid.tests($elements).then(function(result){
+	
+});
+```
 
-formValid.tooltips.error($input, 'message');
-// 只显示tooltips
-
-formValid.test($input)
-formValid.tests($inputs)
-
-formValid.blurValid($form)
-formValid.submitValid($form)
-// e.preventDefault()
+手动显示tooltips
+```
+formValid.tooltips.error($element, 'msg', isScroll); // isScroll 若为 true 则自动滚动到相应表单位置并显示 tooltips
 ```
 
 ###自定义验证规则
