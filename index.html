@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html ng-app="app">
+<html>
 <head>
 	<meta charset="utf-8">
 	<title></title>
-	<meta http-equiv="x-ua-compatible" content="IE=10">
+	<meta http-equiv="x-ua-compatible" content="IE=Edge">
 
 	<link href="css/style.css" rel="stylesheet">
+	<link href="js/tooltipster/tooltipster.css" rel="stylesheet">
 	<!--[if lt IE 9]>
 	<script src="js/html5shiv.js"></script>
 	<![endif]-->
@@ -14,118 +15,34 @@
 <body>
 
 <div class="paper">
-	<section class="boxed">
-		<div class="inner">
-		<section class="section-header center">
-			<h1 class="title">Form Validation <span class="title-highlight">Helper</span></h1>
-		</section>
-		<div class="two-third">
-			<h2>Quick Usage</h2>
-			<section>
-				<pre data-type="JavaScript"><code>
-var element = $('&lt;input type=text data-valid=required /&gt;');
-form.test(element);
-// return: Object {isPassed: false, type: "required"}
-				</code></pre>	
-			</section>
-
-			<section>
-				<pre data-type="html"><code>
-&lt;input type="text" data-valid="required regex" data-regex="email" id="email"&gt;
-&lt;script src="jquery.js"&gt;&lt;/script&gt;
-&lt;script src="formValidHelper.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-form.test($('#email'));
-// return: Object {isPassed: false, type: "required"}
-// or Object {isPassed: false, type: "regex"}
-&lt;/script&gt;
-				</code></pre>	
-			</section>
-			<textarea codex="html" content="content">
-&lt;input type="text" data-valid="required regex" data-regex="email" id="email"&gt;
-&lt;script src="jquery.js"&gt;&lt;/script&gt;
-&lt;script src="formValidHelper.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-form.test($('#email'));
-// return: Object {isPassed: false, type: "required"}
-// or Object {isPassed: false, type: "regex"}
-&lt;/script&gt;
-			</textarea>
-			<a href="https://github.com/tongjieme/formValidHelper/archive/gh-pages.zip" class="pureBtn big red">Download ZIP</a>
-		</div>
-		
-		<div class="one-third last article">
-			<h2>options</h2>
-			<ul>
-				<li><b>data-valid</b>
-					<ol>
-						<li>required</li>
-						<li>regex</li>
-						<li>minLengh</li>
-						<li>maxLength</li>
-						<li>equal</li>
-					</ol>
-				</li>
-				<li><b>data-default</b></li>
-				<li><b>data-regex</b>
-					<ol>
-						<li>email</li>
-						<li>chinese</li>
-						<li>zipcode</li>
-						<li>mobile</li>
-						<li>phone</li>
-						<li>numbers</li>
-						<li>numbers_dot</li>
-						<li>abc</li>
-						<li>numbers_abc_underline</li>
-						<li>url</li>
-					</ol>
-				</li>
-				<li><b>data-min-length, data-max-length</b>
-					<ol>
-						<li>1,2,3...</li>
-					</ol>
-				</li>
-				<li><b>data-equal</b>
-					<ol>
-						<li>css selector: '#email', '.another'</li>
-					</ol>
-				</li>
-			</ul>
-		</div>
-
-		</div> <!-- end inner -->
-	</section>
 
 	<section class="boxed">
 		<div class="inner">
 		<section class="section-header left">
-			<h3 class="title">Real world usage <span class="title-highlight">example</span></h3>
+			<h3 class="title">完整 <span class="title-highlight">example</span></h3>
 		</section>
 		<form action="#" class="column-wrap" id="realExample">
 			<section class="one-third">
 				<input type="text" id="username" data-valid="required noChinese" placeholder="Username">
-				<p class="help">Not passed</p>
 			</section>
 			<section class="one-third">
-				<input type="text" data-valid="required url" placeholder="url">
+				<input type="text" data-valid="required ajaxUsernameExist2 ajaxUsernameExist" placeholder="异步验证示例">
 			</section>
 			<section class="one-third">
-				<input type="password" data-valid="required ajax" name="password" placeholder="Password">
-				<p class="help">Not passed</p>
+				<input type="text" data-valid="required abc" placeholder="abc (自定义验证规则示例)">
 			</section>
 			<section class="one-third">
-				<input type="password" data-valid="required equal_password" name="password2" placeholder="Password">
-				<p class="help">Not passed</p>
+				<input type="password" data-valid="required" name="password" placeholder="Password">
+			</section>
+			<section class="one-third">
+				<input type="password" data-valid="required equal_password" name="password2" placeholder="Password 一致 (验证规则传参示例)">
 			</section>
 			<section class="one-third last">
 				<input type="text" id="email" data-valid="required email" placeholder="Email" name="email">
-				<p class="help">Not passed</p>
 				<p class="help-regex">regex error</p>
 			</section>
 			<section>
 				<textarea data-valid="required minLength" data-min-length="10"></textarea>
-				<p class="help">Not passed</p>
 				<p class="help-minLength">minLenght error</p>
 			</section>
 			<section>
@@ -154,30 +71,20 @@ form.test($('#email'));
 	</section>
 	
 </div> <!-- end paper -->
+
 <script src="js/jquery-1.11.1.min.js"></script>
-<script src="js/pretify/prettify.js"></script>
-
-
-
 <script src="js/tooltipster/jquery.tooltipster.js"></script>
-<link href="js/tooltipster/tooltipster.css" rel="stylesheet">
 <script src="js/formValidHelper.js"></script>
-
-<script src="js/highlight/highlight.pack.js"></script>
-<link href="js/highlight/styles/monokai_sublime.css" rel="stylesheet">
-<script src="js/ng/angular-min.js"></script>
-<script src="js/ng/app.js"></script>
 
 <script>
 formValid.submitValid($('#submitValid'));
-prettyPrint();
+formValid.blurValid($('#realExample'));
     
 form.isAbc = function($el){
-	console.log(arguments);
 	return {
-			isPassed: false,
+			isPassed: $el.val().toLowerCase() == 'abc',
 			type: 'abc',
-			msg: 'abc'
+			msg: '此处不是 abc'
 		};
 }
 form.isAjax = function($el){
@@ -200,22 +107,49 @@ form.isAjax = function($el){
 				}
 			};
 }
+
+
+form.isAjaxUsernameExist = function($el){
+	var This = this;
+	setTimeout(function(){
+		This.resolve({
+			isPassed: false,
+			type: 'ajaxUsernameExist',
+			msg: '用户名可用'
+		});
+	}, 2000);
+
+	return This.promise();
+};
+
+
+form.isAjaxUsernameExist2 = function($el){
+	var This = this;
+	setTimeout(function(){
+		This.resolve({
+			isPassed: false,
+			type: 'ajaxUsernameExist2',
+			msg: '用户名不可用'
+		});
+	}, 2000);
+
+	return This.promise();
+};
 // form.msg.abc = '* abc';
 
-// simple real world example
 $('#realExample').on('submit', function(e){
-	var result = formValid.tests($(this).find('[data-valid]'));
-	if(!result.isPassed) {
-		e.preventDefault();
-	}
+	e.preventDefault();
+	formValid.tests($(this).find('[data-valid]')).then(function(result){
+		if(!result.isPassed) {
+			return;
+		}
+		// $('#realExample').off('submit').trigger('submit');
+	});
+	
 });
-formValid.showOneMessage = true;
-formValid.autoPositionUpdate = true;
-formValid.blurValid($('#realExample'));
 
-$('input, textarea').on('focus', function(){
-	$(this).siblings('[class^=help]').hide();
-});
+
+
 </script>
 </body>
 </html>
