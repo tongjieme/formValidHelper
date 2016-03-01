@@ -16,7 +16,7 @@
 ##使用示例
 变量 form 为逻辑处理模块负责处理数据有效性
 变量 formValid 为用户界面模块 利用 变量form 返回的信息呈现到用户界面
-```
+```html
 <form action="#">
 	<input type="text" data-valid="required" placeholder="Username:" id="myElement">
 	<input type="text" data-valid="required email" placeholder="Email:">
@@ -47,7 +47,7 @@
 </script>
 ```
 
-```
+```html
 <form action="#">
 	<input type="text" data-valid="required email" placeholder="Email:">
 	<input type="text" data-valid="minLength_10" placeholder="最少长度10">
@@ -58,7 +58,7 @@
 ```
 
 ##API
-```
+```javascript
 待补充
 
 form.test($element).then(function(result){
@@ -82,7 +82,7 @@ formValid.tooltips.error($element, 'msg', isScroll); // isScroll 若为 true 则
 ```
 
 ###自定义验证规则
-```
+```html
 <input type="text" data-valid="abc_1">
 <script>
 form.isAbc = function($el, argument1, argument2, ...){
@@ -106,7 +106,7 @@ form.isAbc = function($el, argument1, argument2, ...){
 
 ###自定义异步验证规则
 以最为常见的ajax 验证为例
-```
+```html
 <input type="text" data-valid="ajaxUsernameExist_argument">
 <script>
 form.isAjaxUsernameExist = function($el, argument, argument2, ...){
