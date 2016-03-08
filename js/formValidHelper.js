@@ -380,6 +380,8 @@ if($.fn.tooltipster !== undefined) {
 							tooltips.error($el, r.msg);
 						});
 					}
+				} else {
+					tooltips.hide($el);
 				}
 				deferred.resolve(r);
 			});
