@@ -220,7 +220,7 @@
 		max = parseFloat(max);
 
         return {
-            isPassed: val >= min && val <= max,
+            isPassed: (val >= min && val <= max) && !isNaN(val),
             $el: $el,
             type: 'between',
             msg: '必须在' + min + '至' + max + '之间'
