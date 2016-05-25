@@ -97,6 +97,7 @@ form.isAbc = function($el, argument1, argument2, ...){
 	}
 	return {
 			isPassed: false, // 规则验证结果
+			$el: $el,
 			type: 'abc', // 规则名称
 			msg: 'abc' // 验证结果信息
 		};
@@ -120,6 +121,7 @@ form.isAjaxUsernameExist = function($el, argument, argument2, ...){
 	    success: function (data) {
 	        if(!data.isPassed) {
 	        	This.resolve({
+	        		$el: $el,
 					isPassed: false,
 					type: 'isAjaxUsernameExist',
 					msg: '用户名不可用'
@@ -128,6 +130,7 @@ form.isAjaxUsernameExist = function($el, argument, argument2, ...){
 	        }
 	        if(!data.isPassed) {
 	        	This.resolve({
+	        		$el: $el,
 					isPassed: true,
 					type: 'isAjaxUsernameExist',
 					msg: '用户名不可用'
@@ -136,6 +139,7 @@ form.isAjaxUsernameExist = function($el, argument, argument2, ...){
 	        }
 	        // 简短写法
 	        This.resolve({
+	        	$el: $el,
 				isPassed: data.isPassed,
 				type: 'isAjaxUsernameExist',
 				msg: '用户名不可用'

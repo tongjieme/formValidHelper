@@ -81,16 +81,21 @@ formValid.blurValid($('#realExample'));
 form.isAbc = function($el){
 	return {
 			isPassed: $el.val().toLowerCase() == 'abc',
+			$el: $el,
 			type: 'abc',
 			msg: '此处不是 abc'
 		};
 }
+
+
+
 form.isAjax = function($el){
 	tooltips.error($el, 'validting');
 
 	var defered = $.Deferred();
 	setTimeout(function() {
 		defered.resolve({
+			$el: $el,
 			isPassed: true,
 			type: 'ajax'
 		});
@@ -98,6 +103,7 @@ form.isAjax = function($el){
 
 	return {
 				isPassed: false,
+				$el: $el,
 				isDeferred: true,
 				deferred: defered.promise(),
 				func: function(abc){
@@ -111,6 +117,7 @@ form.isAjaxUsernameExist = function($el){
 	var This = this;
 	setTimeout(function(){
 		This.resolve({
+			$el: $el,
 			isPassed: false,
 			type: 'ajaxUsernameExist',
 			msg: '用户名可用'
@@ -125,6 +132,7 @@ form.isAjaxUsernameExist2 = function($el){
 	var This = this;
 	setTimeout(function(){
 		This.resolve({
+			$el: $el,
 			isPassed: false,
 			type: 'ajaxUsernameExist2',
 			msg: '用户名不可用'
