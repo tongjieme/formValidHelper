@@ -1,7 +1,7 @@
 # 表单验证助手
 一款简单易用且适合复杂表单验证的插件
 
-##特色
+## 特色
 1. 简单易用
 2. 为处理复杂表单逻辑而写 复杂场景如: 多个表单元素验证多个ajax异步验证 有条件式的校验
 3. 验证逻辑处理模块与信息反馈界面模块分离 可利用验证逻辑处理模块编写自己的 信息反馈界面
@@ -13,7 +13,7 @@
 ```
 
 
-##使用示例
+## 使用示例
 变量 form 为逻辑处理模块负责处理数据有效性
 变量 formValid 为用户界面模块 利用 变量form 返回的信息呈现到用户界面
 ```html
@@ -57,7 +57,7 @@
 </script>
 ```
 
-##API
+## API
 ```javascript
 待补充
 
@@ -81,7 +81,7 @@ formValid.tests($elements).then(function(result){
 formValid.tooltips.error($element, 'msg', isScroll); // isScroll 若为 true 则自动滚动到相应表单位置并显示 tooltips
 ```
 
-###自定义验证规则
+### 自定义验证规则
 ```html
 <input type="text" data-valid="abc_1">
 <script>
@@ -105,7 +105,7 @@ form.isAbc = function($el, argument1, argument2, ...){
 </script>
 ```
 
-###自定义异步验证规则
+### 自定义异步验证规则
 以最为常见的ajax 验证为例
 ```html
 <input type="text" data-valid="ajaxUsernameExist_argument">
@@ -152,13 +152,13 @@ form.isAjaxUsernameExist = function($el, argument, argument2, ...){
 </script>
 ```
 
-###约定
+### 约定
 1. 规则命名以 is 开头, 规则名称大写开头, 如 form.isCheckUsernameExist = function($el){};
 2. 如果规则涉及异步验证, 如 ajax 等, 命名以 isAjax 开头 如 form.isAjaxUsernameExist = function($el){};
 3. 规则名字不可含有 "-" "_"
 4. 表格元素验证规则如含有异步检测, 推荐放到最后
 
-###预设验证类型
+### 预设验证类型
 * required
 * email
 * chinese
@@ -183,6 +183,6 @@ form.isAjaxUsernameExist = function($el, argument, argument2, ...){
 
 
 
-###依赖说明
+### 依赖说明
 1. form 逻辑处理模块依赖 jQuery,
 2. formValid 提示界面模块 依赖 [tooltipster](http://iamceege.github.io/tooltipster/)
